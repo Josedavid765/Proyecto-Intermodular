@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,21 +27,22 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuario;
 
-    @NotBlank(message = "El nombre no puede estar vacio")
+    @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, max = 50)
     private String nombre;
 
-    @NotBlank(message = "El apellido no puede estar vacio")
+    @NotBlank(message = "El apellido es obligatorio")
     @Size(min = 2, max = 50)
     private String apellido;
 
     @Email
-    @NotBlank(message =  "El email no puede estar vacio")
+    @NotBlank(message =  "El email es obligatorio")
     private String email;
 
-    @NotNull(message = "El telefono no puede estar vacio")
+    @NotNull(message = "El telefono es obligatorio")
+    @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
     private int telefono;
 
-    @NotBlank(message = "La direccion de entrega no puede estar vacia")
+    @NotBlank(message = "La direccion de entrega es obligatorio")
     private String direccionEntrega;
 }
