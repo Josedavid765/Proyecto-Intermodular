@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -12,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.CascadeType;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -21,16 +24,25 @@ import lombok.Setter;
 public class ComercioLocal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long idcomercio;
+    private Long idcomercio;
+
     @NotBlank(message = "El nombre del comercio es obligatorios")
     @Size(max = 100)
-    String nombreComercio;
+    private String nombreComercio;
+
     @NotBlank(message = "La categoria es obligatoria")
-    String categoria;
+    private String categoria;
+
     @NotBlank(message = "La direccion es obligatoria")
-    String direccionComercio;
+    private String direccionComercio;
+
     @NotBlank(message = "El telefono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
-    String telefono;
-    String horarioApertura;
+    private String telefono;
+
+    @NotBlank(message = "El horario de apertura es obligatorio")
+    private String horarioApertura;
+
+    @OneToMany(mappedBy = "comercio", cascade = CascadeType.ALL)
+    private List<Pedido> pedidos;
 }
