@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.persistence.CascadeType;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -42,4 +45,7 @@ public class Repartidor {
     @Enumerated(EnumType.STRING)
     @NotNull
     private EstadoRepartidor estadodisponibilidad;
+
+    @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL)
+    private List<Pedido> pedidos;
 }

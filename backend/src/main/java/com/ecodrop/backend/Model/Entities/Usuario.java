@@ -1,9 +1,16 @@
 package com.ecodrop.backend.Model.Entities;
 
+import java.util.List;
+
+import com.ecodrop.backend.Model.Enum.Rol;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.CascadeType;
 import lombok.ToString;
 
 @Entity
@@ -45,4 +53,13 @@ public class Usuario {
 
     @NotBlank(message = "La direccion de entrega es obligatorio")
     private String direccionEntrega;
+
+    @NotBlank
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Pedido> pedidos;
 }
