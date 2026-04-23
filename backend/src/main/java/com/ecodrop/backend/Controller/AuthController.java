@@ -1,0 +1,53 @@
+package com.ecodrop.backend.Controller;
+
+import com.ecodrop.backend.DTO.LoginDTO;
+import com.ecodrop.backend.DTO.UsuarioDTO;
+import com.ecodrop.backend.DTO.UsuarioRegistroDTO;
+import com.ecodrop.backend.Security.JwtUtils;
+import com.ecodrop.backend.Service.UsuarioService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioService usuarioService;
+    private final JwtUtils jwtUtils;
+
+    public AuthController(AuthenticationManager authenticationManager, UsuarioService usuarioService, JwtUtils jwtUtils) {
+        this.authenticationManager = authenticationManager;
+        this.usuarioService = usuarioService;
+        this.jwtUtils = jwtUtils;
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<UsuarioDTO> registrar(@Valid @RequestBody UsuarioRegistroDTO registroDTO) {
+        return ResponseEntity.ok(usuarioService.registrar(registroDTO));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtUtils.generateToken(authentication.getName());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", jwt);
+        response.put("email", authentication.getName());
+        
+        return ResponseEntity.ok(response);
+    }
+}
