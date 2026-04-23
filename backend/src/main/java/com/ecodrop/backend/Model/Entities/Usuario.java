@@ -49,7 +49,7 @@ public class Usuario {
 
     @NotNull(message = "El telefono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
-    private int telefono;
+    private Integer telefono;
 
     @NotBlank(message = "La direccion de entrega es obligatorio")
     private String direccionEntrega;

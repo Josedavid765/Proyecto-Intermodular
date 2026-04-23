@@ -29,7 +29,7 @@ public class UsuarioDTO {
     private String email;
 
     @NotNull(message = "El telefono es obligatorio")
-    private int telefono;
+    private Integer telefono;
 
     @NotBlank(message = "La dirección de entrega es obligatoria")
     private String direccionEntrega;
