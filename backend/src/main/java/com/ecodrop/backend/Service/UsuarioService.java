@@ -46,7 +46,7 @@ private UsuarioDTO mapToDTO(Usuario u) {
     dto.setNombre(u.getNombre());
     dto.setApellido(u.getApellido());
     dto.setEmail(u.getEmail());
-    dto.setTelefono(u.getTelefono()); 
+    dto.setTelefono(u.getTelefono());
     dto.setDireccionEntrega(u.getDireccionEntrega());
     return dto;
 }

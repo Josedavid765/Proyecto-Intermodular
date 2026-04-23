@@ -15,7 +15,7 @@ public class UsuarioRegistroDTO {
     private String apellido;
     private String email;
     private String password;
-    private Integer telefono;
+    private String telefono;
     private String direccionEntrega;
     private Rol rol; 
 }

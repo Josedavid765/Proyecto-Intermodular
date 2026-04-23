@@ -47,9 +47,9 @@ public class Usuario {
     @NotBlank(message =  "El email es obligatorio")
     private String email;
 
-    @NotNull(message = "El telefono es obligatorio")
-    @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
-    private Integer telefono;
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^[0-9]{9,15}$", message = "El teléfono debe tener entre 9 y 15 dígitos")
+    private String telefono;
 
     @NotBlank(message = "La direccion de entrega es obligatorio")
     private String direccionEntrega;
