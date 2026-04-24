@@ -7,7 +7,14 @@
         <ul>
             <li><a routerLink="/login">Inicio</a></li>
             <li><a href="#about">Nosotros</a></li>
-            <li><a routerLink="/login" class="btn">Área Cliente</a></li>
+            
+            <li *ngIf="!authService.isLoggedIn()">
+                <a routerLink="/login" class="btn">Área Cliente</a>
+            </li>
+
+            <li *ngIf="authService.isLoggedIn()">
+                <a (click)="logout()" class="btn logout-btn" style="cursor: pointer;">Cerrar Sesión</a>
+            </li>
         </ul>
     </nav>
 </header>
