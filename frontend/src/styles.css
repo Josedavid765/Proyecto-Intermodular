@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
 :root {
     --primary: #2ecc71;
     --secondary: #27ae60;
@@ -20,6 +22,24 @@ body {
     line-height: 1.6;
 }
 
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+}
+
+main {
+    grid-area: main;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -27,13 +47,13 @@ body {
     color: var(--white);
     text-decoration: none;
     border-radius: 5px;
+    font-weight: bold;
     border: none;
     cursor: pointer;
-    transition: transform 0.3s;
-    font-weight: bold;
+    transition: transform 0.3s, background-color 0.3s;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
     transform: scale(1.05);
     background-color: var(--secondary);
 }

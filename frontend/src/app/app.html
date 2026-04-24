@@ -1,24 +1,9 @@
 <div class="grid-container">
-    <header>
-        <div class="logo-container">
-            <img src="assets/img/logo.jpg" alt="Logo EcoDrop" class="logo-img" style="height: 50px; border-radius: 50%;">
-            <h2>EcoDrop</h2>
-        </div>
-        <nav>
-            <ul style="display: flex; list-style: none; gap: 20px; align-items: center;">
-                <li><a routerLink="/login" style="text-decoration: none; color: var(--dark); font-weight: bold;">Inicio</a></li>
-                <li><a href="#" style="text-decoration: none; color: var(--dark); font-weight: bold;">Nosotros</a></li>
-                <li><a routerLink="/login" class="btn">Área Cliente</a></li>
-            </ul>
-        </nav>
-    </header>
+    <app-header></app-header>
 
     <main>
         <router-outlet></router-outlet>
     </main>
 
-    <footer>
-        <p>&copy; 2025 EcoDrop - Proyecto DIW. Todos los derechos reservados.</p>
-        <p>Monestir de Poblet s/n, 46015 Valencia</p>
-    </footer>
+    <app-footer></app-footer>
 </div>

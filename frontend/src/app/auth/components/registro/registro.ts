@@ -10,22 +10,25 @@ import { Router } from '@angular/router';
   styleUrl: './registro.css'     
 })
 export class RegistroComponent {
-  public nuevoUsuario: Usuario = new Usuario();
+  public usuario: Usuario = new Usuario();
 
   constructor(
     private authService: Auth,
     private router: Router
   ) {}
 
-  onSubmit() {
-    this.authService.registrar(this.nuevoUsuario).subscribe({
-      next: (res) => {
-        alert('¡Usuario registrado con éxito!');
+  onRegistro(): void {
+    console.log('Datos a enviar al backend:', this.usuario);
+    
+    this.authService.registrar(this.usuario).subscribe({
+      next: (response) => {
+        console.log('Registro exitoso', response);
+        alert('Cuenta creada con éxito. Ahora puedes iniciar sesión.');
         this.router.navigate(['/login']);
       },
-      error: (err) => {
-        console.error(err);
-        alert('Error al registrar: ' + (err.error?.message || 'Error desconocido'));
+      error: (error) => {
+        console.error('Fallo al registrar:', error);
+        alert('Error en el registro. Abre la consola (F12) para más detalles.');
       }
     });
   }

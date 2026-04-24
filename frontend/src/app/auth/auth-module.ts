@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RegistroComponent } from './components/registro/registro';
+import { LoginComponent } from './components/login/login';
 
 @NgModule({
   declarations: [
-    RegistroComponent
+    RegistroComponent,
+    LoginComponent
   ],
   imports: [
     CommonModule, 
@@ -14,7 +16,8 @@ import { RegistroComponent } from './components/registro/registro';
     RouterModule
   ],
   exports: [
-    RegistroComponent
+    RegistroComponent,
+    LoginComponent
   ]
 })
 export class AuthModule {}
