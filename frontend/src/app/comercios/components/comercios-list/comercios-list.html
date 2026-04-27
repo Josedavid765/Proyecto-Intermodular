@@ -1,0 +1,32 @@
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">Nuestros Comercios Asociados</h2>
+
+    <div *ngIf="cargando" style="text-align: center; font-weight: bold;">
+        <p>Cargando comercios locales... ⏳</p>
+    </div>
+
+    <div *ngIf="error" style="color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+        <h3 style="margin-top: 0; color: #721c24;">Ha ocurrido un problema:</h3>
+        <p style="font-family: monospace; font-size: 1.1rem;">{{ error }}</p>
+        <p style="font-size: 0.9rem; margin-top: 15px;">Haz una captura de esta caja roja para saber exactamente qué falla.</p>
+    </div>
+
+    <ul *ngIf="!cargando && !error && comercios.length > 0" style="list-style: none; padding: 0;">
+        <li *ngFor="let comercio of comercios" style="margin-bottom: 10px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 5px; color: var(--dark);">{{ comercio.nombreComercio }}</h3>
+            <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">
+                {{ comercio.categoria }}
+            </span>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #7f8c8d;">📍 {{ comercio.direccionComercio }}</p>
+            <p style="margin-top: 5px; font-size: 0.9rem; color: #7f8c8d;">📞 {{ comercio.telefono }}</p>
+        </li>
+    </ul>
+
+    <div *ngIf="!cargando && !error && comercios.length === 0" style="text-align: center; color: #7f8c8d; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <p>Conexión exitosa, pero aún no hay comercios dados de alta en tu base de datos de Java.</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && comercios.length === 0" style="text-align: center; color: #7f8c8d;">
+        <p>Aún no hay comercios disponibles en la base de datos.</p>
+    </div>
+</div>

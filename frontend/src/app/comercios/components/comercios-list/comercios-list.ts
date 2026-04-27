@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Comercio } from '../../../../models/comercio';
-import { ComercioService } from '../../../../services/comercio';
+import { Comercio } from '../../../models/comercio';
+import { ComercioService } from '../../../services/comercio';
 
 @Component({
   selector: 'app-comercios-list',
@@ -25,12 +25,24 @@ export class ComerciosListComponent implements OnInit {
       next: (data) => {
         this.comercios = data;
         this.cargando = false;
-        console.log('Comercios cargados con éxito:', this.comercios);
       },
       error: (err) => {
-        this.error = 'No hemos podido cargar los locales. Revisa tu conexión o el servidor.';
+        // 1. Extraemos el código de estado (Ej: 403, 500, 404)
+        const status = err.status; 
+        
+        // 2. Extraemos el mensaje de texto (Ej: Forbidden, Not Found)
+        const statusText = err.statusText; 
+        
+        // 3. Extraemos el mensaje específico que haya mandado tu Java (si lo hay)
+        const backendMessage = err.error ? JSON.stringify(err.error) : 'El backend no ha dado más detalles.';
+
+        // 4. Lo montamos todo en nuestra variable de error
+        this.error = `ERROR TÉCNICO -> Código: ${status} | Tipo: ${statusText} | Detalle: ${backendMessage}`;
+        
         this.cargando = false;
-        console.error('Error del Backend:', err);
+        
+        // 5. Lo imprimimos también en la consola por si acaso
+        console.error('🛑 DETALLE DEL ERROR COMPLETO:', err);
       }
     });
   }

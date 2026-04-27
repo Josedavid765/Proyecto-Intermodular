@@ -1,6 +1,6 @@
 export class Comercio {
     constructor(
-        public idcomercio?: number,
+        public idComercio?: number,
         public nombreComercio?: string,
         public categoria?: string,
         public direccionComercio?: string,
