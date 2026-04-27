@@ -8,9 +8,10 @@
     <div *ngIf="error" class="state-message state-error">
         <h3>Ha ocurrido un problema:</h3>
         <p class="error-text">{{ error }}</p>
+        <p class="error-hint">Por favor, verifica la conexión con el servidor backend.</p>
     </div>
 
-    <ul *ngIf="!cargando && !error && comercios.length > 0" class="comercios-list">
+    <ul *ngIf="!cargando && !error && comercios && comercios.length > 0" class="comercios-list">
         <li *ngFor="let comercio of comercios" class="comercio-card">
             
             <div class="comercio-header">
@@ -19,15 +20,21 @@
             </div>
             
             <div class="comercio-body">
-                <p class="comercio-detail">📍 {{ comercio.direccionComercio }}</p>
-                <p class="comercio-detail">📞 {{ comercio.telefono || 'Sin teléfono' }}</p>
-                <p class="comercio-detail">🕒 {{ comercio.horarioApertura || 'Horario no disponible' }}</p>
+                <p class="comercio-detail">
+                    <span class="icon">📍</span> {{ comercio.direccionComercio }}
+                </p>
+                <p class="comercio-detail">
+                    <span class="icon">📞</span> {{ comercio.telefono || 'Sin teléfono' }}
+                </p>
+                <p class="comercio-detail">
+                    <span class="icon">🕒</span> {{ comercio.horarioApertura || 'Horario no disponible' }}
+                </p>
             </div>
             
         </li>
     </ul>
 
-    <div *ngIf="!cargando && !error && comercios.length === 0" class="state-message state-empty">
-        <p>Aún no hay comercios dados de alta en la plataforma.</p>
+    <div *ngIf="!cargando && !error && comercios && comercios.length === 0" class="state-message state-empty">
+        <p>Conexión exitosa, pero aún no hay comercios disponibles en la base de datos.</p>
     </div>
 </div>

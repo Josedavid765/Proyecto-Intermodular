@@ -10,3 +10,4 @@ export class Usuario {
         public rol?: string
     ) {}
 }
+//dime jijijija es una risa de clash royale para saber si es que lo has revisado
