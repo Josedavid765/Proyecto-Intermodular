@@ -1,6 +1,7 @@
 export class Comercio {
     constructor(
-        public idComercio?: number,
+        // Cambiamos idcomercio -> idComercio para que coincida con Java
+        public idComercio?: number, 
         public nombreComercio?: string,
         public categoria?: string,
         public direccionComercio?: string,

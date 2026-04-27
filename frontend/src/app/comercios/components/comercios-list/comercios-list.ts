@@ -22,27 +22,39 @@ export class ComerciosListComponent implements OnInit {
 
   cargarComercios(): void {
     this.comercioService.getComercios().subscribe({
-      next: (data) => {
-        this.comercios = data;
-        this.cargando = false;
+      // Ponemos 'any' temporalmente para poder inspeccionar la caja
+      next: (data: any) => { 
+        console.log('📦 Datos crudos desde Java:', data);
+
+        // --- LA MAGIA DEL DESEMPAQUETADO ---
+        if (Array.isArray(data)) {
+          // Caso A: Java manda la lista directamente
+          this.comercios = data; 
+        } else if (data && data.content) {
+          // Caso B: Java lo manda envuelto en "content" (Muy típico en Spring Boot)
+          this.comercios = data.content; 
+        } else if (data && data.data) {
+          // Caso C: Java lo manda envuelto en "data"
+          this.comercios = data.data; 
+        } else {
+          // Fallback de seguridad
+          this.comercios = []; 
+          console.warn('⚠️ Formato de datos desconocido:', data);
+        }
+
+        // Apagamos el mensaje de "Cargando..."
+        this.cargando = false; 
+        
+        console.log('✅ Comercios listos para pintar en HTML:', this.comercios);
       },
       error: (err) => {
-        // 1. Extraemos el código de estado (Ej: 403, 500, 404)
+        // Tu código de error se queda exactamente igual
         const status = err.status; 
-        
-        // 2. Extraemos el mensaje de texto (Ej: Forbidden, Not Found)
         const statusText = err.statusText; 
-        
-        // 3. Extraemos el mensaje específico que haya mandado tu Java (si lo hay)
-        const backendMessage = err.error ? JSON.stringify(err.error) : 'El backend no ha dado más detalles.';
-
-        // 4. Lo montamos todo en nuestra variable de error
-        this.error = `ERROR TÉCNICO -> Código: ${status} | Tipo: ${statusText} | Detalle: ${backendMessage}`;
-        
+        const backendMessage = err.error ? JSON.stringify(err.error) : 'Sin detalles.';
+        this.error = `ERROR -> Código: ${status} | Detalle: ${backendMessage}`;
         this.cargando = false;
-        
-        // 5. Lo imprimimos también en la consola por si acaso
-        console.error('🛑 DETALLE DEL ERROR COMPLETO:', err);
+        console.error('🛑 ERROR:', err);
       }
     });
   }

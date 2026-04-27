@@ -22,12 +22,10 @@ export class LoginComponent {
   onLogin() {
     this.authService.login(this.credentials).subscribe({
       next: (res) => {
-        console.log('Login correcto:', res);
-        alert('¡Bienvenido de nuevo a EcoDrop!');
         this.router.navigate(['/comercios']); 
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error en login:', err);
         alert('Email o contraseña incorrectos');
       }
     });
