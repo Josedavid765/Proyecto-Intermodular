@@ -4,6 +4,9 @@ import java.time.LocalDate;
 
 import com.ecodrop.backend.Model.Enum.EstadoPedido;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +39,11 @@ public class Pedido {
 
     @NotNull
     @DecimalMin(value = "0.0")
-    private Double montoTotal;
+    private Double total;
+
+    @NotNull
+    @DecimalMin(value = "0.0")
+    private Double gastosEnvio;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -52,4 +60,7 @@ public class Pedido {
     @ManyToOne
     @JoinColumn(name = "id_repartidor", nullable = true)
     private Repartidor repartidor;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private List<LineaPedido> lineas;
 }

@@ -1,6 +1,7 @@
 package com.ecodrop.backend.DTO;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.ecodrop.backend.Model.Enum.EstadoPedido;
 
@@ -20,12 +21,16 @@ public class PedidoDTO {
     @NotNull(message = "La fecha del pedido es obligatoria")
     private LocalDate fechaPedido;
 
-    @NotNull(message = "El monto total es obligatorio")
-    @DecimalMin(value = "0.0", message = "El monto no puede ser negativo")
-    private Double montoTotal;
-
     @NotNull(message = "El estado del pedido es obligatorio")
     private EstadoPedido estado;
+
+    @NotNull(message = "Los gastos de envío son obligatorios")
+    @DecimalMin(value = "0.0", message = "Los gastos de envío no pueden ser negativos")
+    private Double gastosEnvio;
+
+    @NotNull(message = "El total es obligatorio")
+    @DecimalMin(value = "0.0", message = "El total no puede ser negativo")
+    private Double total;
 
     @NotNull(message = "El ID del usuario es obligatorio")
     private Long idUsuario;
@@ -34,4 +39,6 @@ public class PedidoDTO {
     private Long idComercio;
 
     private Long idRepartidor;
+
+    private List<LineaPedidoDTO> lineas;
 }

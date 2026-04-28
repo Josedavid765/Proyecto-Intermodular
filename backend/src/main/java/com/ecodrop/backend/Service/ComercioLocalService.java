@@ -1,6 +1,7 @@
 package com.ecodrop.backend.Service;
 
 import com.ecodrop.backend.DTO.ComercioLocalDTO;
+import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ComercioLocalService {
 
     public ComercioLocalDTO buscarPorId(Long id) {
         ComercioLocal comercio = comercioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comercio no encontrado con ID: " + id));
+                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + id));
         return mapToDTO(comercio);
     }
 

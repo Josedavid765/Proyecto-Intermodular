@@ -12,7 +12,7 @@
     </div>
 
     <ul *ngIf="!cargando && !error && comercios && comercios.length > 0" class="comercios-list">
-        <li *ngFor="let comercio of comercios" class="comercio-card">
+        <li *ngFor="let comercio of comercios" class="comercio-card" [routerLink]="['/comercios', comercio.idComercio]">
             
             <div class="comercio-header">
                 <h3 class="comercio-name">{{ comercio.nombreComercio }}</h3>

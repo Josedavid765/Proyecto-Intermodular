@@ -1,0 +1,40 @@
+<div class="pedidos-container">
+    <h2 class="pedidos-title">Mis Pedidos</h2>
+
+    <div *ngIf="cargando" class="state-message state-loading">
+        <p>Buscando tus pedidos... ⏳</p>
+    </div>
+
+    <div *ngIf="error" class="state-message state-error">
+        <h3>Ha ocurrido un problema:</h3>
+        <p class="error-text">{{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && pedidos && pedidos.length > 0" class="pedidos-grid">
+        <div *ngFor="let pedido of pedidos" class="pedido-card">
+            
+            <div class="pedido-header">
+                <span class="pedido-id">Pedido #{{ pedido.idPedido || 'N/A' }}</span>
+                <span class="pedido-badge" [ngClass]="getClassPorEstado(pedido.estado)">
+                    {{ pedido.estado || 'DESCONOCIDO' }}
+                </span>
+            </div>
+            
+            <div class="pedido-body">
+                <p class="pedido-detail"><strong>Comercio:</strong> {{ pedido.nombreComercio || 'EcoDrop Local' }}</p>
+                <p class="pedido-detail"><strong>Fecha:</strong> {{ (pedido.fechaPedido | date:'dd/MM/yyyy') || 'Reciente' }}</p>
+                <p class="pedido-detail"><strong>Entrega en:</strong> {{ pedido.direccionEntrega || 'Tu dirección principal' }}</p>
+            </div>
+
+            <div class="pedido-footer">
+                <span class="pedido-total">Total: {{ (pedido.total || 0) | currency:'EUR' }}</span>
+                <button class="btn-detalle">Ver Detalle</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <div *ngIf="!cargando && !error && pedidos && pedidos.length === 0" class="state-message state-empty">
+        <p>Aún no has realizado ningún pedido con nosotros. ¡Anímate a explorar los comercios locales!</p>
+    </div>
+</div>

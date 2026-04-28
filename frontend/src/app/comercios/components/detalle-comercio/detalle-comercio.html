@@ -1,0 +1,30 @@
+<div class="detalle-container" *ngIf="comercio">
+  <div class="comercio-header">
+    <h1>{{ comercio.nombreComercio }}</h1>
+    <p class="categoria">{{ comercio.categoria }}</p>
+    <p class="direccion">📍 {{ comercio.direccionComercio }}</p>
+    <p class="telefono">📞 {{ comercio.telefono }}</p>
+    <p class="horario">🕒 {{ comercio.horarioApertura }}</p>
+  </div>
+
+  <h2>Catálogo de Productos</h2>
+
+  <div *ngIf="cargando" class="estado-mensaje">Cargando productos...</div>
+  <div *ngIf="error" class="estado-mensaje error">{{ error }}</div>
+
+  <div *ngIf="!cargando && !error && productos.length === 0" class="estado-mensaje">
+    Este comercio aún no tiene productos disponibles.
+  </div>
+
+  <div class="productos-grid" *ngIf="!cargando && productos.length > 0">
+    <div class="producto-card" *ngFor="let producto of productos">
+      <img *ngIf="producto.imagen" [src]="producto.imagen" [alt]="producto.nombre" class="producto-img">
+      <div class="producto-info">
+        <h3>{{ producto.nombre }}</h3>
+        <p class="precio">{{ producto.precioUnitario | currency:'EUR' }}</p>
+        <p class="stock">Stock: {{ producto.stock }} {{ producto.unidadMedida }}</p>
+        <span class="categoria-badge">{{ producto.categoriaProducto }}</span>
+      </div>
+    </div>
+  </div>
+</div>

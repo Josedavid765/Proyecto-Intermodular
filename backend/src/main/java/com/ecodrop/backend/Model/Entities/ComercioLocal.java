@@ -5,8 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -43,6 +45,13 @@ public class ComercioLocal {
     @NotBlank(message = "El horario de apertura es obligatorio")
     private String horarioApertura;
 
+    @OneToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
     @OneToMany(mappedBy = "comercio", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
+
+    @OneToMany(mappedBy = "comercio", cascade = CascadeType.ALL)
+    private List<Producto> productos;
 }

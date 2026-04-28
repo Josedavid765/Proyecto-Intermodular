@@ -14,4 +14,8 @@ export class ComercioService {
   getComercios(): Observable<Comercio[]> {
     return this.http.get<Comercio[]>(this.apiUrl);
   }
+
+  getComercioPorId(id: number): Observable<Comercio> {
+    return this.http.get<Comercio>(`${this.apiUrl}/${id}`);
+  }
 }
