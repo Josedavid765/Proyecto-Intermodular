@@ -2,45 +2,49 @@ package com.ecodrop.backend.DTO;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import com.ecodrop.backend.Model.Enum.EstadoPedido;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class PedidoDTO {
     private Long idPedido;
-
     private LocalDate fechaPedido;
-
-    private EstadoPedido estado;
-
-    @DecimalMin(value = "0.0", message = "Los gastos de envío no pueden ser negativos")
     private Double gastosEnvio;
-
     private Double total;
-
-    @NotNull(message = "El ID del usuario es obligatorio")
+    private EstadoPedido estado;
     private Long idUsuario;
-
-    @NotNull(message = "El ID del comercio es obligatorio")
     private Long idComercio;
-
     private Long idRepartidor;
-
-    @NotBlank(message = "La dirección de entrega es obligatoria")
-    private String direccionEntrega;
-
-    @NotNull(message = "La lista de líneas es obligatoria")
-    @Size(min = 1, message = "El pedido debe tener al menos un producto")
     private List<LineaPedidoDTO> lineas;
+
+    public PedidoDTO() {}
+
+    public PedidoDTO(Long idPedido, LocalDate fechaPedido, Double gastosEnvio, Double total, EstadoPedido estado, Long idUsuario, Long idComercio, Long idRepartidor, List<LineaPedidoDTO> lineas) {
+        this.idPedido = idPedido;
+        this.fechaPedido = fechaPedido;
+        this.gastosEnvio = gastosEnvio;
+        this.total = total;
+        this.estado = estado;
+        this.idUsuario = idUsuario;
+        this.idComercio = idComercio;
+        this.idRepartidor = idRepartidor;
+        this.lineas = lineas;
+    }
+
+    public Long getIdPedido() { return idPedido; }
+    public void setIdPedido(Long idPedido) { this.idPedido = idPedido; }
+    public LocalDate getFechaPedido() { return fechaPedido; }
+    public void setFechaPedido(LocalDate fechaPedido) { this.fechaPedido = fechaPedido; }
+    public Double getGastosEnvio() { return gastosEnvio; }
+    public void setGastosEnvio(Double gastosEnvio) { this.gastosEnvio = gastosEnvio; }
+    public Double getTotal() { return total; }
+    public void setTotal(Double total) { this.total = total; }
+    public EstadoPedido getEstado() { return estado; }
+    public void setEstado(EstadoPedido estado) { this.estado = estado; }
+    public Long getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+    public Long getIdComercio() { return idComercio; }
+    public void setIdComercio(Long idComercio) { this.idComercio = idComercio; }
+    public Long getIdRepartidor() { return idRepartidor; }
+    public void setIdRepartidor(Long idRepartidor) { this.idRepartidor = idRepartidor; }
+    public List<LineaPedidoDTO> getLineas() { return lineas; }
+    public void setLineas(List<LineaPedidoDTO> lineas) { this.lineas = lineas; }
 }

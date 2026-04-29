@@ -10,8 +10,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("null")
 @Service
 public class ProductoService {
 
@@ -48,8 +50,23 @@ public class ProductoService {
     }
 
     public ProductoDTO crearProducto(@NonNull ProductoDTO dto) {
-        ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
-                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + dto.getIdComercio()));
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO del producto no puede ser nulo");
+        }
+        if (dto.getIdComercio() == null) {
+            throw new IllegalArgumentException("El ID del comercio es obligatorio");
+        }
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre del producto es obligatorio");
+        }
+        if (dto.getPrecioUnitario() == null || dto.getPrecioUnitario() <= 0) {
+            throw new IllegalArgumentException("El precio unitario debe ser mayor a 0");
+        }
+
+        ComercioLocal comercio = Objects.requireNonNull(
+                comercioRepository.findById(dto.getIdComercio())
+                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + dto.getIdComercio()))
+        );
 
         Producto producto = mapToEntity(dto);
         producto.setComercio(comercio);
@@ -58,16 +75,22 @@ public class ProductoService {
     }
 
     public ProductoDTO actualizarProducto(@NonNull Long id, @NonNull ProductoDTO dto) {
-        Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id));
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO del producto no puede ser nulo");
+        }
 
-        producto.setNombre(dto.getNombre());
-        producto.setPrecioUnitario(dto.getPrecioUnitario());
-        producto.setStock(dto.getStock());
-        producto.setCategoriaProducto(dto.getCategoriaProducto());
-        producto.setUnidadMedida(dto.getUnidadMedida());
-        producto.setDisponibilidad(dto.getDisponibilidad());
-        producto.setImagen(dto.getImagen());
+        Producto producto = Objects.requireNonNull(
+                productoRepository.findById(id)
+                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id))
+        );
+
+        if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
+        if (dto.getPrecioUnitario() != null) producto.setPrecioUnitario(dto.getPrecioUnitario());
+        if (dto.getStock() != null) producto.setStock(dto.getStock());
+        if (dto.getCategoriaProducto() != null) producto.setCategoriaProducto(dto.getCategoriaProducto());
+        if (dto.getUnidadMedida() != null) producto.setUnidadMedida(dto.getUnidadMedida());
+        if (dto.getDisponibilidad() != null) producto.setDisponibilidad(dto.getDisponibilidad());
+        if (dto.getImagen() != null) producto.setImagen(dto.getImagen());
 
         Producto actualizado = productoRepository.save(producto);
         return mapToDTO(actualizado);

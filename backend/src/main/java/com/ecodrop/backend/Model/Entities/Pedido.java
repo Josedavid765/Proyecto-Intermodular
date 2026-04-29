@@ -20,16 +20,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "pedido")
 public class Pedido {
     @Id
@@ -69,4 +62,40 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<LineaPedido> lineas;
+
+    public Pedido() {}
+
+    public Pedido(Long idPedido, LocalDate fechaPedido, Double total, Double gastosEnvio, EstadoPedido estado, Usuario cliente, ComercioLocal comercio, String direccionEntrega, Repartidor repartidor, List<LineaPedido> lineas) {
+        this.idPedido = idPedido;
+        this.fechaPedido = fechaPedido;
+        this.total = total;
+        this.gastosEnvio = gastosEnvio;
+        this.estado = estado;
+        this.cliente = cliente;
+        this.comercio = comercio;
+        this.direccionEntrega = direccionEntrega;
+        this.repartidor = repartidor;
+        this.lineas = lineas;
+    }
+
+    public Long getIdPedido() { return idPedido; }
+    public void setIdPedido(Long idPedido) { this.idPedido = idPedido; }
+    public LocalDate getFechaPedido() { return fechaPedido; }
+    public void setFechaPedido(LocalDate fechaPedido) { this.fechaPedido = fechaPedido; }
+    public Double getTotal() { return total; }
+    public void setTotal(Double total) { this.total = total; }
+    public Double getGastosEnvio() { return gastosEnvio; }
+    public void setGastosEnvio(Double gastosEnvio) { this.gastosEnvio = gastosEnvio; }
+    public EstadoPedido getEstado() { return estado; }
+    public void setEstado(EstadoPedido estado) { this.estado = estado; }
+    public Usuario getCliente() { return cliente; }
+    public void setCliente(Usuario cliente) { this.cliente = cliente; }
+    public ComercioLocal getComercio() { return comercio; }
+    public void setComercio(ComercioLocal comercio) { this.comercio = comercio; }
+    public String getDireccionEntrega() { return direccionEntrega; }
+    public void setDireccionEntrega(String direccionEntrega) { this.direccionEntrega = direccionEntrega; }
+    public Repartidor getRepartidor() { return repartidor; }
+    public void setRepartidor(Repartidor repartidor) { this.repartidor = repartidor; }
+    public List<LineaPedido> getLineas() { return lineas; }
+    public void setLineas(List<LineaPedido> lineas) { this.lineas = lineas; }
 }

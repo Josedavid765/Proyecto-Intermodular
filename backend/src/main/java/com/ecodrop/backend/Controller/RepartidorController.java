@@ -4,10 +4,14 @@ import com.ecodrop.backend.DTO.RepartidorDTO;
 import com.ecodrop.backend.Service.RepartidorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
+@SuppressWarnings("null")
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/repartidores")
@@ -29,9 +33,16 @@ public class RepartidorController {
         return ResponseEntity.ok(repartidorService.listarTodos());
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('REPARTIDOR')")
+    public ResponseEntity<RepartidorDTO> obtenerPerfil() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(repartidorService.obtenerPorEmail(email));
+    }
+
     @PutMapping("/estado")
     @PreAuthorize("hasRole('REPARTIDOR')")
-    public ResponseEntity<RepartidorDTO> actualizarEstado(@RequestBody RepartidorDTO dto) {
+    public ResponseEntity<RepartidorDTO> actualizarEstado(@Valid @RequestBody RepartidorDTO dto) {
         return ResponseEntity.ok(repartidorService.guardar(dto));
     }
 }

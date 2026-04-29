@@ -24,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("null")
 @Service
 public class PedidoService {
 
@@ -53,6 +55,12 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
+    public List<PedidoDTO> listarPorRepartidor(Long idRepartidor) {
+        return pedidoRepository.findByRepartidorIdRepartidor(idRepartidor).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<PedidoDTO> listarPorUsuario(@NonNull Long idUsuario) {
         return pedidoRepository.findByClienteIdUsuario(idUsuario).stream()
                 .map(this::mapToDTO)
@@ -68,19 +76,30 @@ public class PedidoService {
     @Transactional
     @PreAuthorize("hasRole('USUARIO')")
     public PedidoDTO crearPedido(@NonNull PedidoDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO del pedido no puede ser nulo");
+        }
+        if (dto.getIdComercio() == null) {
+            throw new IllegalArgumentException("El ID del comercio es obligatorio");
+        }
+
         // 1. Obtener usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
+        Usuario usuario = Objects.requireNonNull(
+                usuarioRepository.findByEmail(email)
+                        .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"))
+        );
 
         // 2. Obtener comercio del pedido
-        ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
-                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"));
+        ComercioLocal comercio = Objects.requireNonNull(
+                comercioRepository.findById(dto.getIdComercio())
+                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"))
+        );
 
         // 3. Crear pedido base
         Pedido pedido = new Pedido();
-        pedido.setGastosEnvio(dto.getGastosEnvio());
+        pedido.setGastosEnvio(dto.getGastosEnvio() != null ? dto.getGastosEnvio() : 0.0);
         pedido.setCliente(usuario);
         pedido.setComercio(comercio);
 
@@ -90,11 +109,20 @@ public class PedidoService {
 
         // 4. Procesar líneas de pedido
         double subtotal = 0.0;
-        if (dto.getLineas() != null) {
+        if (dto.getLineas() != null && !dto.getLineas().isEmpty()) {
             for (LineaPedidoDTO lineaDTO : dto.getLineas()) {
+                if (lineaDTO.getIdProducto() == null) {
+                    throw new IllegalArgumentException("El ID del producto es obligatorio en la línea de pedido");
+                }
+                if (lineaDTO.getCantidad() <= 0) {
+                    throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
+                }
+
                 // Obtener producto
-                Producto producto = productoRepository.findById(lineaDTO.getIdProducto())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()));
+                Producto producto = Objects.requireNonNull(
+                        productoRepository.findById(lineaDTO.getIdProducto())
+                                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()))
+                );
 
                 // Validar que el producto pertenece al comercio del pedido
                 if (!producto.getComercio().getIdcomercio().equals(comercio.getIdcomercio())) {

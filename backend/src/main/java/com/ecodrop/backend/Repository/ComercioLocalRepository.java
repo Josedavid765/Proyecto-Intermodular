@@ -9,5 +9,5 @@ import com.ecodrop.backend.Model.Entities.ComercioLocal;
 
 @Repository
 public interface ComercioLocalRepository extends JpaRepository<ComercioLocal, Long>{
-    Optional<ComercioLocal> findByUsuarioIdUsuario(Long idUsuario);
+    Optional<ComercioLocal> findByUsuarioEmail(String email);
 }

@@ -10,16 +10,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "lineas_pedido")
 public class LineaPedido {
 
@@ -43,4 +36,25 @@ public class LineaPedido {
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
+
+    public LineaPedido() {}
+
+    public LineaPedido(Long idLineaPedido, Integer cantidad, Double precioVenta, Pedido pedido, Producto producto) {
+        this.idLineaPedido = idLineaPedido;
+        this.cantidad = cantidad;
+        this.precioVenta = precioVenta;
+        this.pedido = pedido;
+        this.producto = producto;
+    }
+
+    public Long getIdLineaPedido() { return idLineaPedido; }
+    public void setIdLineaPedido(Long idLineaPedido) { this.idLineaPedido = idLineaPedido; }
+    public Integer getCantidad() { return cantidad; }
+    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public Double getPrecioVenta() { return precioVenta; }
+    public void setPrecioVenta(Double precioVenta) { this.precioVenta = precioVenta; }
+    public Pedido getPedido() { return pedido; }
+    public void setPedido(Pedido pedido) { this.pedido = pedido; }
+    public Producto getProducto() { return producto; }
+    public void setProducto(Producto producto) { this.producto = producto; }
 }

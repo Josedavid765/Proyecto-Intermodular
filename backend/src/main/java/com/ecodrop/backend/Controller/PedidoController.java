@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SuppressWarnings("null")
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/pedidos")
@@ -20,8 +21,14 @@ public class PedidoController {
         this.pedidoService = pedidoService;
     }
 
-    @GetMapping("/usuario/{idUsuario}")
+    @GetMapping("/todos")
     @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PedidoDTO>> listarTodos() {
+        return ResponseEntity.ok(pedidoService.listarTodos());
+    }
+
+    @GetMapping("/usuario/{idUsuario}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USUARIO')")
     public ResponseEntity<List<PedidoDTO>> listarPorUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(pedidoService.listarPorUsuario(idUsuario));
     }
@@ -30,6 +37,12 @@ public class PedidoController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('COMERCIO')")
     public ResponseEntity<List<PedidoDTO>> listarPorComercio(@PathVariable Long idComercio) {
         return ResponseEntity.ok(pedidoService.listarPorComercio(idComercio));
+    }
+
+    @GetMapping("/repartidor/{idRepartidor}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('REPARTIDOR')")
+    public ResponseEntity<List<PedidoDTO>> listarPorRepartidor(@PathVariable Long idRepartidor) {
+        return ResponseEntity.ok(pedidoService.listarPorRepartidor(idRepartidor));
     }
 
     @PostMapping

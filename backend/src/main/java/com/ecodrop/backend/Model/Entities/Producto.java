@@ -16,15 +16,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "productos")
 public class Producto {
 
@@ -60,4 +53,40 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "id_comercio", nullable = false)
     private ComercioLocal comercio;
+
+    public Producto() {}
+
+    public Producto(Long idProducto, String nombre, String descripcion, Double precioUnitario, Integer stock, CategoriaProducto categoriaProducto, UnidadMedida unidadMedida, Boolean disponibilidad, String imagen, ComercioLocal comercio) {
+        this.idProducto = idProducto;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precioUnitario = precioUnitario;
+        this.stock = stock;
+        this.categoriaProducto = categoriaProducto;
+        this.unidadMedida = unidadMedida;
+        this.disponibilidad = disponibilidad;
+        this.imagen = imagen;
+        this.comercio = comercio;
+    }
+
+    public Long getIdProducto() { return idProducto; }
+    public void setIdProducto(Long idProducto) { this.idProducto = idProducto; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public Double getPrecioUnitario() { return precioUnitario; }
+    public void setPrecioUnitario(Double precioUnitario) { this.precioUnitario = precioUnitario; }
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
+    public CategoriaProducto getCategoriaProducto() { return categoriaProducto; }
+    public void setCategoriaProducto(CategoriaProducto categoriaProducto) { this.categoriaProducto = categoriaProducto; }
+    public UnidadMedida getUnidadMedida() { return unidadMedida; }
+    public void setUnidadMedida(UnidadMedida unidadMedida) { this.unidadMedida = unidadMedida; }
+    public Boolean getDisponibilidad() { return disponibilidad; }
+    public void setDisponibilidad(Boolean disponibilidad) { this.disponibilidad = disponibilidad; }
+    public String getImagen() { return imagen; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
+    public ComercioLocal getComercio() { return comercio; }
+    public void setComercio(ComercioLocal comercio) { this.comercio = comercio; }
 }

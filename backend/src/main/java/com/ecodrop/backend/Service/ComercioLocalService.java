@@ -7,8 +7,10 @@ import com.ecodrop.backend.Repository.ComercioLocalRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("null")
 @Service
 public class ComercioLocalService {
     
@@ -25,12 +27,28 @@ public class ComercioLocalService {
     }
 
     public ComercioLocalDTO buscarPorId(Long id) {
-        ComercioLocal comercio = comercioRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + id));
+        ComercioLocal comercio = Objects.requireNonNull(
+                comercioRepository.findById(id)
+                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + id))
+        );
+        return mapToDTO(comercio);
+    }
+
+    public ComercioLocalDTO obtenerPorEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("El email no puede ser nulo o vacío");
+        }
+        ComercioLocal comercio = Objects.requireNonNull(
+                comercioRepository.findByUsuarioEmail(email)
+                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado para el email: " + email))
+        );
         return mapToDTO(comercio);
     }
 
     public ComercioLocalDTO guardar(ComercioLocalDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        }
         ComercioLocal comercio = mapToEntity(dto);
         ComercioLocal guardado = comercioRepository.save(comercio);
         return mapToDTO(guardado);
@@ -42,6 +60,7 @@ public class ComercioLocalService {
         dto.setNombreComercio(c.getNombreComercio());
         dto.setCategoria(c.getCategoria());
         dto.setDireccionComercio(c.getDireccionComercio());
+        dto.setLogo(c.getLogo());
         dto.setTelefono(c.getTelefono());
         return dto;
     }
@@ -51,6 +70,7 @@ public class ComercioLocalService {
         c.setNombreComercio(dto.getNombreComercio());
         c.setCategoria(dto.getCategoria());
         c.setDireccionComercio(dto.getDireccionComercio());
+        c.setLogo(dto.getLogo());
         c.setTelefono(dto.getTelefono());
         return c;
     }

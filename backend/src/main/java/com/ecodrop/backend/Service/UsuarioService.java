@@ -11,6 +11,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+@SuppressWarnings("null")
 @Service
 public class UsuarioService {
 
@@ -43,8 +46,10 @@ public class UsuarioService {
     }
 
     public UsuarioDTO obtenerPorEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado con email: " + email));
+        Usuario usuario = Objects.requireNonNull(
+                usuarioRepository.findByEmail(email)
+                        .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado con email: " + email))
+        );
         return mapToDTO(usuario);
     }
 
