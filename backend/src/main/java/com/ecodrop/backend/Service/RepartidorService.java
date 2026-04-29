@@ -3,6 +3,7 @@ package com.ecodrop.backend.Service;
 import com.ecodrop.backend.DTO.RepartidorDTO;
 import com.ecodrop.backend.Model.Entities.Repartidor;
 import com.ecodrop.backend.Repository.RepartidorRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class RepartidorService {
                 .collect(Collectors.toList());
     }
 
-    public RepartidorDTO guardar(RepartidorDTO dto) {
+    public RepartidorDTO guardar(@NonNull RepartidorDTO dto) {
         Repartidor repartidor = mapToEntity(dto);
         Repartidor guardado = repartidorRepository.save(repartidor);
         return mapToDTO(guardado);

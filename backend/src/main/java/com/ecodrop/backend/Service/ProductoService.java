@@ -6,6 +6,7 @@ import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Model.Entities.Producto;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
 import com.ecodrop.backend.Repository.ProductoRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductoDTO> listarPorComercio(Long idComercio) {
+    public List<ProductoDTO> listarPorComercio(@NonNull Long idComercio) {
         return productoRepository.findByComercioIdComercio(idComercio).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -40,13 +41,13 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
-    public ProductoDTO buscarPorId(Long id) {
+    public ProductoDTO buscarPorId(@NonNull Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id));
         return mapToDTO(producto);
     }
 
-    public ProductoDTO crearProducto(ProductoDTO dto) {
+    public ProductoDTO crearProducto(@NonNull ProductoDTO dto) {
         ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + dto.getIdComercio()));
 
@@ -56,7 +57,7 @@ public class ProductoService {
         return mapToDTO(guardado);
     }
 
-    public ProductoDTO actualizarProducto(Long id, ProductoDTO dto) {
+    public ProductoDTO actualizarProducto(@NonNull Long id, @NonNull ProductoDTO dto) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id));
 
@@ -72,7 +73,7 @@ public class ProductoService {
         return mapToDTO(actualizado);
     }
 
-    public void eliminarProducto(Long id) {
+    public void eliminarProducto(@NonNull Long id) {
         if (!productoRepository.existsById(id)) {
             throw new RecursoNoEncontrado("Producto no encontrado con ID: " + id);
         }

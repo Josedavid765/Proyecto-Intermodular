@@ -61,6 +61,6 @@ public class Pedido {
     @JoinColumn(name = "id_repartidor", nullable = true)
     private Repartidor repartidor;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineaPedido> lineas;
 }

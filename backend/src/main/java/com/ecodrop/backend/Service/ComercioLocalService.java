@@ -4,6 +4,7 @@ import com.ecodrop.backend.DTO.ComercioLocalDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +25,13 @@ public class ComercioLocalService {
                 .collect(Collectors.toList());
     }
 
-    public ComercioLocalDTO buscarPorId(Long id) {
+    public ComercioLocalDTO buscarPorId(@NonNull Long id) {
         ComercioLocal comercio = comercioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + id));
         return mapToDTO(comercio);
     }
 
-    public ComercioLocalDTO guardar(ComercioLocalDTO dto) {
+    public ComercioLocalDTO guardar(@NonNull ComercioLocalDTO dto) {
         ComercioLocal comercio = mapToEntity(dto);
         ComercioLocal guardado = comercioRepository.save(comercio);
         return mapToDTO(guardado);

@@ -3,21 +3,26 @@ package com.ecodrop.backend.Service;
 import com.ecodrop.backend.DTO.LineaPedidoDTO;
 import com.ecodrop.backend.DTO.PedidoDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
+import com.ecodrop.backend.Exceptions.StockInsuficienteException;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Model.Entities.LineaPedido;
 import com.ecodrop.backend.Model.Entities.Pedido;
 import com.ecodrop.backend.Model.Entities.Producto;
-import com.ecodrop.backend.Model.Entities.Repartidor;
 import com.ecodrop.backend.Model.Entities.Usuario;
+import com.ecodrop.backend.Model.Enum.EstadoPedido;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
 import com.ecodrop.backend.Repository.LineaPedidoRepository;
 import com.ecodrop.backend.Repository.PedidoRepository;
 import com.ecodrop.backend.Repository.ProductoRepository;
-import com.ecodrop.backend.Repository.RepartidorRepository;
 import com.ecodrop.backend.Repository.UsuarioRepository;
+import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,20 +32,17 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ComercioLocalRepository comercioRepository;
-    private final RepartidorRepository repartidorRepository;
     private final ProductoRepository productoRepository;
     private final LineaPedidoRepository lineaPedidoRepository;
 
     public PedidoService(PedidoRepository pedidoRepository,
                          UsuarioRepository usuarioRepository,
                          ComercioLocalRepository comercioRepository,
-                         RepartidorRepository repartidorRepository,
                          ProductoRepository productoRepository,
                          LineaPedidoRepository lineaPedidoRepository) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.comercioRepository = comercioRepository;
-        this.repartidorRepository = repartidorRepository;
         this.productoRepository = productoRepository;
         this.lineaPedidoRepository = lineaPedidoRepository;
     }
@@ -51,56 +53,84 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
-    public List<PedidoDTO> listarPorUsuario(Long idUsuario) {
+    public List<PedidoDTO> listarPorUsuario(@NonNull Long idUsuario) {
         return pedidoRepository.findByUsuarioIdUsuario(idUsuario).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<PedidoDTO> listarPorComercio(Long idComercio) {
+    public List<PedidoDTO> listarPorComercio(@NonNull Long idComercio) {
         return pedidoRepository.findByComercioIdComercio(idComercio).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public PedidoDTO crearPedido(PedidoDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
+    @PreAuthorize("hasRole('USUARIO')")
+    public PedidoDTO crearPedido(@NonNull PedidoDTO dto) {
+        // 1. Obtener usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
-        
+
+        // 2. Obtener comercio del pedido
         ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"));
 
+        // 3. Crear pedido base
         Pedido pedido = new Pedido();
-        pedido.setFechaPedido(dto.getFechaPedido());
         pedido.setGastosEnvio(dto.getGastosEnvio());
-        pedido.setTotal(dto.getTotal());
-        pedido.setEstado(dto.getEstado());
         pedido.setUsuario(usuario);
         pedido.setComercio(comercio);
 
-        if (dto.getIdRepartidor() != null) {
-            Repartidor repartidor = repartidorRepository.findById(dto.getIdRepartidor())
-                    .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado"));
-            pedido.setRepartidor(repartidor);
-        }
-
+        // Guardar pedido para obtener ID
         Pedido guardado = pedidoRepository.save(pedido);
 
+        // 4. Procesar líneas de pedido
+        double subtotal = 0.0;
         if (dto.getLineas() != null) {
             for (LineaPedidoDTO lineaDTO : dto.getLineas()) {
+                // Obtener producto
                 Producto producto = productoRepository.findById(lineaDTO.getIdProducto())
                         .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()));
 
+                // Validar que el producto pertenece al comercio del pedido
+                if (!producto.getComercio().getIdcomercio().equals(comercio.getIdcomercio())) {
+                    throw new IllegalArgumentException("El producto " + producto.getNombre() + " no pertenece al comercio del pedido");
+                }
+
+                // Validar stock
+                int cantidadSolicitada = lineaDTO.getCantidad();
+                if (producto.getStock() < cantidadSolicitada) {
+                    throw new StockInsuficienteException(
+                            "Stock insuficiente para " + producto.getNombre() +
+                            ". Disponible: " + producto.getStock() + ", Solicitado: " + cantidadSolicitada
+                    );
+                }
+
+                // Decrementar stock
+                producto.setStock(producto.getStock() - cantidadSolicitada);
+                productoRepository.save(producto);
+
+                // Crear línea (precio de venta se copia del producto, no del DTO)
                 LineaPedido linea = new LineaPedido();
-                linea.setCantidad(lineaDTO.getCantidad());
-                linea.setPrecioVenta(lineaDTO.getPrecioVenta());
+                linea.setCantidad(cantidadSolicitada);
+                linea.setPrecioVenta(producto.getPrecioUnitario());
                 linea.setPedido(guardado);
                 linea.setProducto(producto);
 
                 lineaPedidoRepository.save(linea);
+                subtotal += linea.getCantidad() * linea.getPrecioVenta();
             }
         }
+
+        // 5. Cálculo de total (subtotal + gastosEnvio + 0.50€ fee)
+        guardado.setTotal(subtotal + guardado.getGastosEnvio() + 0.50);
+
+        // 6. Automatización de fecha y estado
+        guardado.setFechaPedido(LocalDate.now());
+        guardado.setEstado(EstadoPedido.PENDIENTE);
 
         return mapToDTO(guardado);
     }
@@ -115,12 +145,10 @@ public class PedidoService {
         dto.setIdUsuario(p.getUsuario().getIdUsuario());
         dto.setIdComercio(p.getComercio().getIdcomercio());
         
-        if (p.getRepartidor() != null) {
-            dto.setIdRepartidor(p.getRepartidor().getIdRepartidor());
-        }
-
         if (p.getLineas() != null) {
-            List<LineaPedidoDTO> lineasDTO = p.getLineas().stream().map(this::mapLineaToDTO).collect(Collectors.toList());
+            List<LineaPedidoDTO> lineasDTO = p.getLineas().stream()
+                    .map(this::mapLineaToDTO)
+                    .collect(Collectors.toList());
             dto.setLineas(lineasDTO);
         }
         

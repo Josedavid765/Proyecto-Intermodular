@@ -1,12 +1,14 @@
 package com.ecodrop.backend.Service;
 
 import com.ecodrop.backend.DTO.LineaPedidoDTO;
+import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.LineaPedido;
 import com.ecodrop.backend.Model.Entities.Pedido;
 import com.ecodrop.backend.Model.Entities.Producto;
 import com.ecodrop.backend.Repository.LineaPedidoRepository;
 import com.ecodrop.backend.Repository.PedidoRepository;
 import com.ecodrop.backend.Repository.ProductoRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,25 +22,25 @@ public class LineaPedidoService {
     private final ProductoRepository productoRepository;
 
     public LineaPedidoService(LineaPedidoRepository lineaPedidoRepository,
-                              PedidoRepository pedidoRepository,
-                              ProductoRepository productoRepository) {
+                               PedidoRepository pedidoRepository,
+                               ProductoRepository productoRepository) {
         this.lineaPedidoRepository = lineaPedidoRepository;
         this.pedidoRepository = pedidoRepository;
         this.productoRepository = productoRepository;
     }
 
-    public List<LineaPedidoDTO> listarPorPedido(Long idPedido) {
+    public List<LineaPedidoDTO> listarPorPedido(@NonNull Long idPedido) {
         return lineaPedidoRepository.findByPedidoIdPedido(idPedido).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    public LineaPedidoDTO crearLinea(LineaPedidoDTO dto) {
+    public LineaPedidoDTO crearLinea(@NonNull LineaPedidoDTO dto) {
         Pedido pedido = pedidoRepository.findById(dto.getIdPedido())
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + dto.getIdPedido()));
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + dto.getIdPedido()));
 
         Producto producto = productoRepository.findById(dto.getIdProducto())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + dto.getIdProducto()));
+                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + dto.getIdProducto()));
 
         LineaPedido linea = mapToEntity(dto);
         linea.setPedido(pedido);
@@ -48,9 +50,9 @@ public class LineaPedidoService {
         return mapToDTO(guardada);
     }
 
-    public void eliminarLinea(Long id) {
+    public void eliminarLinea(@NonNull Long id) {
         if (!lineaPedidoRepository.existsById(id)) {
-            throw new RuntimeException("LineaPedido no encontrada con ID: " + id);
+            throw new RecursoNoEncontrado("LineaPedido no encontrada con ID: " + id);
         }
         lineaPedidoRepository.deleteById(id);
     }
