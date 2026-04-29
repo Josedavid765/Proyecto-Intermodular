@@ -6,11 +6,13 @@ import java.util.List;
 import com.ecodrop.backend.Model.Enum.EstadoPedido;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.validation.constraints.NotNull;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -18,18 +20,13 @@ import jakarta.validation.constraints.NotNull;
 public class PedidoDTO {
     private Long idPedido;
 
-    @NotNull(message = "La fecha del pedido es obligatoria")
     private LocalDate fechaPedido;
 
-    @NotNull(message = "El estado del pedido es obligatorio")
     private EstadoPedido estado;
 
-    @NotNull(message = "Los gastos de envío son obligatorios")
     @DecimalMin(value = "0.0", message = "Los gastos de envío no pueden ser negativos")
     private Double gastosEnvio;
 
-    @NotNull(message = "El total es obligatorio")
-    @DecimalMin(value = "0.0", message = "El total no puede ser negativo")
     private Double total;
 
     @NotNull(message = "El ID del usuario es obligatorio")
@@ -40,5 +37,10 @@ public class PedidoDTO {
 
     private Long idRepartidor;
 
+    @NotBlank(message = "La dirección de entrega es obligatoria")
+    private String direccionEntrega;
+
+    @NotNull(message = "La lista de líneas es obligatoria")
+    @Size(min = 1, message = "El pedido debe tener al menos un producto")
     private List<LineaPedidoDTO> lineas;
 }

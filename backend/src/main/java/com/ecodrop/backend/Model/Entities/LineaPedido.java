@@ -8,11 +8,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Getter @Setter
@@ -26,6 +28,7 @@ public class LineaPedido {
     private Long idLineaPedido;
 
     @NotNull(message = "La cantidad es obligatoria")
+    @Min(1)
     private Integer cantidad;
 
     @NotNull(message = "El precio de venta es obligatorio")
@@ -34,6 +37,7 @@ public class LineaPedido {
 
     @ManyToOne
     @JoinColumn(name = "id_pedido", nullable = false)
+    @JsonBackReference
     private Pedido pedido;
 
     @ManyToOne

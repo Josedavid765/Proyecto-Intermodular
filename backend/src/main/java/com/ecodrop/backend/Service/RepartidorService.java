@@ -36,7 +36,7 @@ public class RepartidorService {
         dto.setNombre(r.getNombre());
         dto.setTelefono(r.getTelefono());
         dto.setVehiculo(r.getVehiculo());
-        dto.setEstadoDisponibilidad(r.getEstadodisponibilidad());
+        dto.setEstado(r.getEstado());
         return dto;
     }
 
@@ -45,7 +45,7 @@ public class RepartidorService {
         r.setNombre(dto.getNombre());
         r.setTelefono(dto.getTelefono());
         r.setVehiculo(dto.getVehiculo());
-        r.setEstadodisponibilidad(dto.getEstadoDisponibilidad());
+        r.setEstado(dto.getEstado());
         return r;
     }
 }

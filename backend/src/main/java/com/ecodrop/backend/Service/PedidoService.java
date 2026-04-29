@@ -54,13 +54,13 @@ public class PedidoService {
     }
 
     public List<PedidoDTO> listarPorUsuario(@NonNull Long idUsuario) {
-        return pedidoRepository.findByUsuarioIdUsuario(idUsuario).stream()
+        return pedidoRepository.findByClienteIdUsuario(idUsuario).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     public List<PedidoDTO> listarPorComercio(@NonNull Long idComercio) {
-        return pedidoRepository.findByComercioIdComercio(idComercio).stream()
+        return pedidoRepository.findByComercioIdcomercio(idComercio).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -81,11 +81,12 @@ public class PedidoService {
         // 3. Crear pedido base
         Pedido pedido = new Pedido();
         pedido.setGastosEnvio(dto.getGastosEnvio());
-        pedido.setUsuario(usuario);
+        pedido.setCliente(usuario);
         pedido.setComercio(comercio);
 
         // Guardar pedido para obtener ID
         Pedido guardado = pedidoRepository.save(pedido);
+        guardado.setDireccionEntrega(usuario.getDireccionEntrega());
 
         // 4. Procesar líneas de pedido
         double subtotal = 0.0;
@@ -97,7 +98,7 @@ public class PedidoService {
 
                 // Validar que el producto pertenece al comercio del pedido
                 if (!producto.getComercio().getIdcomercio().equals(comercio.getIdcomercio())) {
-                    throw new IllegalArgumentException("El producto " + producto.getNombre() + " no pertenece al comercio del pedido");
+                    throw new RecursoNoEncontrado("El producto " + producto.getNombre() + " no pertenece al comercio del pedido");
                 }
 
                 // Validar stock
@@ -125,8 +126,8 @@ public class PedidoService {
             }
         }
 
-        // 5. Cálculo de total (subtotal + gastosEnvio + 0.50€ fee)
-        guardado.setTotal(subtotal + guardado.getGastosEnvio() + 0.50);
+        // 5. Cálculo de total (suma de productos + gastosEnvio, sin fee extra)
+        guardado.setTotal(subtotal + guardado.getGastosEnvio());
 
         // 6. Automatización de fecha y estado
         guardado.setFechaPedido(LocalDate.now());
@@ -142,7 +143,7 @@ public class PedidoService {
         dto.setGastosEnvio(p.getGastosEnvio());
         dto.setTotal(p.getTotal());
         dto.setEstado(p.getEstado());
-        dto.setIdUsuario(p.getUsuario().getIdUsuario());
+        dto.setIdUsuario(p.getCliente().getIdUsuario());
         dto.setIdComercio(p.getComercio().getIdcomercio());
         
         if (p.getLineas() != null) {

@@ -1,16 +1,10 @@
 package com.ecodrop.backend.Controller;
 
 import com.ecodrop.backend.DTO.PedidoDTO;
-import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
-import com.ecodrop.backend.Model.Entities.Usuario;
-import com.ecodrop.backend.Model.Enum.Rol;
-import com.ecodrop.backend.Repository.ComercioLocalRepository;
-import com.ecodrop.backend.Repository.UsuarioRepository;
 import com.ecodrop.backend.Service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,46 +15,26 @@ import java.util.List;
 public class PedidoController {
 
     private final PedidoService pedidoService;
-    private final UsuarioRepository usuarioRepository;
-    private final ComercioLocalRepository comercioRepository;
 
-    public PedidoController(PedidoService pedidoService,
-                           UsuarioRepository usuarioRepository,
-                           ComercioLocalRepository comercioRepository) {
+    public PedidoController(PedidoService pedidoService) {
         this.pedidoService = pedidoService;
-        this.usuarioRepository = usuarioRepository;
-        this.comercioRepository = comercioRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<PedidoDTO>> listar() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+    @GetMapping("/usuario/{idUsuario}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PedidoDTO>> listarPorUsuario(@PathVariable Long idUsuario) {
+        return ResponseEntity.ok(pedidoService.listarPorUsuario(idUsuario));
+    }
 
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
-
-        if (usuario.getRol() == Rol.ROLE_USUARIO) {
-            return ResponseEntity.ok(pedidoService.listarPorUsuario(usuario.getIdUsuario()));
-        } else if (usuario.getRol() == Rol.ROLE_COMERCIO) {
-            Long idComercio = comercioRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
-                    .map(comercio -> comercio.getIdcomercio())
-                    .orElseThrow(() -> new RecursoNoEncontrado("No se encontró comercio asociado al usuario"));
-            return ResponseEntity.ok(pedidoService.listarPorComercio(idComercio));
-        } else {
-            return ResponseEntity.ok(pedidoService.listarTodos());
-        }
+    @GetMapping("/comercio/{idComercio}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('COMERCIO')")
+    public ResponseEntity<List<PedidoDTO>> listarPorComercio(@PathVariable Long idComercio) {
+        return ResponseEntity.ok(pedidoService.listarPorComercio(idComercio));
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDTO> realizarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
-
-        pedidoDTO.setIdUsuario(usuario.getIdUsuario());
-        return ResponseEntity.ok(pedidoService.crearPedido(pedidoDTO));
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<PedidoDTO> crearPedido(@Valid @RequestBody PedidoDTO dto) {
+        return ResponseEntity.ok(pedidoService.crearPedido(dto));
     }
 }

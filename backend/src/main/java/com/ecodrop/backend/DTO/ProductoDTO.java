@@ -21,17 +21,16 @@ public class ProductoDTO {
     @NotBlank(message = "El nombre del producto es obligatorio")
     private String nombre;
 
+    private String descripcion;
+
     @NotNull(message = "El precio unitario es obligatorio")
     @DecimalMin(value = "0.0", message = "El precio debe ser mayor o igual a 0")
     private Double precioUnitario;
 
-    @NotNull(message = "El stock es obligatorio")
     private Integer stock;
 
-    @NotNull(message = "La categoria es obligatoria")
     private CategoriaProducto categoriaProducto;
 
-    @NotNull(message = "La unidad de medida es obligatoria")
     private UnidadMedida unidadMedida;
 
     private Boolean disponibilidad;

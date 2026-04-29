@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ecodrop.backend.Model.Enum.Rol;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,6 +45,7 @@ public class Usuario {
 
     @Email
     @NotBlank(message =  "El email es obligatorio")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "El teléfono es obligatorio")
@@ -54,11 +56,12 @@ public class Usuario {
     private String direccionEntrega;
 
     @NotBlank
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
 }

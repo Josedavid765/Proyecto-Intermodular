@@ -4,7 +4,6 @@ import com.ecodrop.backend.DTO.ComercioLocalDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +24,13 @@ public class ComercioLocalService {
                 .collect(Collectors.toList());
     }
 
-    public ComercioLocalDTO buscarPorId(@NonNull Long id) {
+    public ComercioLocalDTO buscarPorId(Long id) {
         ComercioLocal comercio = comercioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + id));
         return mapToDTO(comercio);
     }
 
-    public ComercioLocalDTO guardar(@NonNull ComercioLocalDTO dto) {
+    public ComercioLocalDTO guardar(ComercioLocalDTO dto) {
         ComercioLocal comercio = mapToEntity(dto);
         ComercioLocal guardado = comercioRepository.save(comercio);
         return mapToDTO(guardado);
@@ -44,7 +43,6 @@ public class ComercioLocalService {
         dto.setCategoria(c.getCategoria());
         dto.setDireccionComercio(c.getDireccionComercio());
         dto.setTelefono(c.getTelefono());
-        dto.setHorarioApertura(c.getHorarioApertura());
         return dto;
     }
 
@@ -54,7 +52,6 @@ public class ComercioLocalService {
         c.setCategoria(dto.getCategoria());
         c.setDireccionComercio(dto.getDireccionComercio());
         c.setTelefono(dto.getTelefono());
-        c.setHorarioApertura(dto.getHorarioApertura());
         return c;
     }
 }

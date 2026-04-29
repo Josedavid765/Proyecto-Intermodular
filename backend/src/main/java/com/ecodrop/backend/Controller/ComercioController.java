@@ -3,6 +3,7 @@ package com.ecodrop.backend.Controller;
 import com.ecodrop.backend.DTO.ComercioLocalDTO;
 import com.ecodrop.backend.Service.ComercioLocalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,13 @@ public class ComercioController {
     @GetMapping("/{id}")
     public ResponseEntity<ComercioLocalDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(comercioService.buscarPorId(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ComercioLocalDTO> obtenerPerfil() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        // TODO: Need to add obtenerPorEmail method to ComercioLocalService
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping

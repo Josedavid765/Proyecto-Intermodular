@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -34,11 +35,14 @@ public class Producto {
     @NotBlank(message = "El nombre del producto es obligatorio")
     private String nombre;
 
+    private String descripcion;
+
     @NotNull(message = "El precio unitario es obligatorio")
     @DecimalMin(value = "0.0", message = "El precio debe ser mayor o igual a 0")
     private Double precioUnitario;
 
     @NotNull(message = "El stock es obligatorio")
+    @Min(0)
     private Integer stock;
 
     @Enumerated(EnumType.STRING)

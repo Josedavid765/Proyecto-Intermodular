@@ -38,6 +38,8 @@ public class ComercioLocal {
     @NotBlank(message = "La direccion es obligatoria")
     private String direccionComercio;
 
+    private String logo;
+
     @NotBlank(message = "El telefono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
     private String telefono;

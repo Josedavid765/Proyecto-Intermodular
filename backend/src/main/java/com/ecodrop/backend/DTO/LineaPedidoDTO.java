@@ -1,6 +1,7 @@
 package com.ecodrop.backend.DTO;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,11 @@ public class LineaPedidoDTO {
 
     private Long idLineaPedido;
 
+    @NotNull(message = "El ID del producto es obligatorio")
+    private Long idProducto;
+
     @NotNull(message = "La cantidad es obligatoria")
+    @Min(value = 1, message = "La cantidad mínima es 1")
     private Integer cantidad;
 
     @NotNull(message = "El precio de venta es obligatorio")
@@ -23,7 +28,4 @@ public class LineaPedidoDTO {
 
     @NotNull(message = "El ID del pedido es obligatorio")
     private Long idPedido;
-
-    @NotNull(message = "El ID del producto es obligatorio")
-    private Long idProducto;
 }

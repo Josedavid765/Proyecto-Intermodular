@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,9 @@ public class Repartidor {
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
+    @NotBlank(message = "El apellido es obligatorio")
+    private String apellidos;
+
     @NotBlank(message = "El telefono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
     private String telefono;
@@ -42,10 +46,15 @@ public class Repartidor {
     @NotNull
     private Vehiculo vehiculo;
 
+    private Boolean disponibilidad;
+
     @Enumerated(EnumType.STRING)
     @NotNull
-    private EstadoRepartidor estadodisponibilidad;
+    private EstadoRepartidor estado;
 
     @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
+
+    @OneToOne
+    private Usuario usuario;
 }

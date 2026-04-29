@@ -30,7 +30,7 @@ public class ProductoService {
     }
 
     public List<ProductoDTO> listarPorComercio(@NonNull Long idComercio) {
-        return productoRepository.findByComercioIdComercio(idComercio).stream()
+        return productoRepository.findByComercioIdcomercio(idComercio).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

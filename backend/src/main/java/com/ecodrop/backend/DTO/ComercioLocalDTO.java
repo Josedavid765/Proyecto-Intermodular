@@ -24,10 +24,9 @@ public class ComercioLocalDTO {
     @NotBlank(message = "La dirección es obligatoria")
     private String direccionComercio;
 
+    private String logo;
+
     @NotBlank(message = "El teléfono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener 9 dígitos")
     private String telefono;
-
-    @NotBlank(message = "El horario de apertura es obligatorio")
-    private String horarioApertura;
 }

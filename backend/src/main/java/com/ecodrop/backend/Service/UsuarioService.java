@@ -3,6 +3,7 @@ package com.ecodrop.backend.Service;
 import com.ecodrop.backend.DTO.UsuarioDTO;
 import com.ecodrop.backend.DTO.UsuarioRegistroDTO;
 import com.ecodrop.backend.Exceptions.EmailRegistradoException;
+import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.Usuario;
 import com.ecodrop.backend.Model.Enum.Rol;
 import com.ecodrop.backend.Repository.UsuarioRepository;
@@ -33,12 +34,18 @@ public class UsuarioService {
 
         usuario.setTelefono(registroDTO.getTelefono());
         
-        usuario.setDireccionEntrega(registroDTO.getDireccionEntrega());
+        usuario.setDireccionEntrega(registroDTO.getDireccion());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
-        usuario.setRol(registroDTO.getRol() != null ? registroDTO.getRol() : Rol.ROLE_USUARIO);
+        usuario.setRol(Rol.ROLE_USUARIO);
 
         Usuario guardado = usuarioRepository.save(usuario);
         return mapToDTO(guardado);
+    }
+
+    public UsuarioDTO obtenerPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado con email: " + email));
+        return mapToDTO(usuario);
     }
 
     private UsuarioDTO mapToDTO(Usuario u) {

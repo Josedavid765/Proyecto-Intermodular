@@ -18,11 +18,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Getter @Setter
@@ -51,16 +53,20 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    private Usuario cliente;
 
     @ManyToOne
     @JoinColumn(name = "id_comercio", nullable = false)
     private ComercioLocal comercio;
+
+    @NotBlank(message = "La dirección de entrega es obligatoria")
+    private String direccionEntrega;
 
     @ManyToOne
     @JoinColumn(name = "id_repartidor", nullable = true)
     private Repartidor repartidor;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<LineaPedido> lineas;
 }

@@ -1,5 +1,7 @@
 package com.ecodrop.backend.DTO;
 
+import com.ecodrop.backend.Model.Enum.Rol;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,9 +30,11 @@ public class UsuarioDTO {
     @NotBlank(message = "El email es obligatorio")
     private String email;
 
-    @NotNull(message = "El telefono es obligatorio")
+    @NotNull(message = "El teléfono es obligatorio")
     private String telefono;
 
     @NotBlank(message = "La dirección de entrega es obligatoria")
     private String direccionEntrega;
+
+    private Rol rol;
 }

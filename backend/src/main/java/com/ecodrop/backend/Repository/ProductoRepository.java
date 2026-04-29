@@ -9,6 +9,6 @@ import com.ecodrop.backend.Model.Entities.Producto;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-    List<Producto> findByComercioIdComercio(Long idComercio);
+    List<Producto> findByComercioIdcomercio(Long idcomercio);
     List<Producto> findByDisponibilidadTrue();
 }
