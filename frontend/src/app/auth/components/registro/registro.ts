@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Usuario } from '../../../models/usuario';
+import { Usuario } from '../../../models/usuario.model';
 import { Auth } from '../../../services/auth';
 import { Router } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrl: './registro.css'     
 })
 export class RegistroComponent {
-  public usuario: Usuario = new Usuario();
+  public usuario: Usuario = {};
 
   constructor(
     private authService: Auth,

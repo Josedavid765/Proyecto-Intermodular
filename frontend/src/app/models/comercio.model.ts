@@ -4,5 +4,6 @@ export interface Comercio {
   categoria?: string;
   direccionComercio?: string;
   telefono?: string;
+  horarioApertura?: string;
   logo?: string;
 }

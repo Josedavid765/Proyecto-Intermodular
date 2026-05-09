@@ -1,17 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
+import { PedidosListComponent } from './pedidos-list';
 
-import { PedidosList } from './pedidos-list';
-
-describe('PedidosList', () => {
-  let component: PedidosList;
-  let fixture: ComponentFixture<PedidosList>;
+describe('PedidosListComponent', () => {
+  let component: PedidosListComponent;
+  let fixture: ComponentFixture<PedidosListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PedidosList],
+      declarations: [PedidosListComponent],
+      imports: [HttpClientModule],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PedidosList);
+    fixture = TestBed.createComponent(PedidosListComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

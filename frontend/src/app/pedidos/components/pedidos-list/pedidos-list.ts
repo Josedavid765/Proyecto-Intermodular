@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Pedido } from '../../../models/pedido';
+import { Pedido } from '../../../models/pedido.model';
 import { PedidoService } from '../../../services/pedido';
 
 @Component({
@@ -51,7 +51,7 @@ export class PedidosListComponent implements OnInit {
     
     switch(estado.toUpperCase()) {
       case 'PENDIENTE': return 'estado-pendiente';
-      case 'EN_CAMINO': return 'estado-camino';
+      case 'EN_TRANSITO': return 'estado-camino';
       case 'ENTREGADO': return 'estado-entregado';
       case 'CANCELADO': return 'estado-cancelado';
       default: return 'estado-default';
