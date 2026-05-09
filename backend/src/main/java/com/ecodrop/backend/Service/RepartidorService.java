@@ -3,12 +3,12 @@ package com.ecodrop.backend.Service;
 import com.ecodrop.backend.DTO.RepartidorDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.Repartidor;
+import com.ecodrop.backend.Model.Enum.EstadoRepartidor;
 import com.ecodrop.backend.Repository.RepartidorRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("null")
@@ -27,21 +27,22 @@ public class RepartidorService {
                 .collect(Collectors.toList());
     }
 
+    public List<RepartidorDTO> listarDisponibles() {
+        return repartidorRepository.findByEstado(EstadoRepartidor.DISPONIBLE).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     public RepartidorDTO obtenerPorEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El email no puede ser nulo o vacío");
         }
-        Repartidor repartidor = Objects.requireNonNull(
-                repartidorRepository.findByUsuarioEmail(email)
-                        .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado para el email: " + email))
-        );
+        Repartidor repartidor = repartidorRepository.findByUsuarioEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado para el email: " + email));
         return mapToDTO(repartidor);
     }
 
     public RepartidorDTO guardar(@NonNull RepartidorDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("El DTO no puede ser nulo");
-        }
         Repartidor repartidor = mapToEntity(dto);
         Repartidor guardado = repartidorRepository.save(repartidor);
         return mapToDTO(guardado);

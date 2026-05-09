@@ -10,7 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("null")
@@ -50,9 +49,6 @@ public class ProductoService {
     }
 
     public ProductoDTO crearProducto(@NonNull ProductoDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("El DTO del producto no puede ser nulo");
-        }
         if (dto.getIdComercio() == null) {
             throw new IllegalArgumentException("El ID del comercio es obligatorio");
         }
@@ -63,10 +59,8 @@ public class ProductoService {
             throw new IllegalArgumentException("El precio unitario debe ser mayor a 0");
         }
 
-        ComercioLocal comercio = Objects.requireNonNull(
-                comercioRepository.findById(dto.getIdComercio())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + dto.getIdComercio()))
-        );
+        ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
+                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con ID: " + dto.getIdComercio()));
 
         Producto producto = mapToEntity(dto);
         producto.setComercio(comercio);
@@ -75,14 +69,8 @@ public class ProductoService {
     }
 
     public ProductoDTO actualizarProducto(@NonNull Long id, @NonNull ProductoDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("El DTO del producto no puede ser nulo");
-        }
-
-        Producto producto = Objects.requireNonNull(
-                productoRepository.findById(id)
-                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id))
-        );
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + id));
 
         if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
         if (dto.getPrecioUnitario() != null) producto.setPrecioUnitario(dto.getPrecioUnitario());

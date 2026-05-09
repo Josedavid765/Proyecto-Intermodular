@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("null")
@@ -38,15 +37,11 @@ public class LineaPedidoService {
     }
 
     public LineaPedidoDTO crearLinea(@NonNull LineaPedidoDTO dto) {
-        Pedido pedido = Objects.requireNonNull(
-                pedidoRepository.findById(dto.getIdPedido())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + dto.getIdPedido()))
-        );
+        Pedido pedido = pedidoRepository.findById(dto.getIdPedido())
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + dto.getIdPedido()));
 
-        Producto producto = Objects.requireNonNull(
-                productoRepository.findById(dto.getIdProducto())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + dto.getIdProducto()))
-        );
+        Producto producto = productoRepository.findById(dto.getIdProducto())
+                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado con ID: " + dto.getIdProducto()));
 
         LineaPedido linea = mapToEntity(dto);
         linea.setPedido(pedido);

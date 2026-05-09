@@ -30,7 +30,7 @@ public class RepartidorController {
 
     @GetMapping("/disponibles")
     public ResponseEntity<List<RepartidorDTO>> listarDisponibles() {
-        return ResponseEntity.ok(repartidorService.listarTodos());
+        return ResponseEntity.ok(repartidorService.listarDisponibles());
     }
 
     @GetMapping("/me")

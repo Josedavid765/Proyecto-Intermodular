@@ -23,15 +23,19 @@ public class ComercioLocalDTO {
     @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener 9 dígitos")
     private String telefono;
 
+    @NotBlank(message = "El horario de apertura es obligatorio")
+    private String horarioApertura;
+
     public ComercioLocalDTO() {}
 
-    public ComercioLocalDTO(Long idComercio, String nombreComercio, String categoria, String direccionComercio, String logo, String telefono) {
+    public ComercioLocalDTO(Long idComercio, String nombreComercio, String categoria, String direccionComercio, String logo, String telefono, String horarioApertura) {
         this.idComercio = idComercio;
         this.nombreComercio = nombreComercio;
         this.categoria = categoria;
         this.direccionComercio = direccionComercio;
         this.logo = logo;
         this.telefono = telefono;
+        this.horarioApertura = horarioApertura;
     }
 
     public Long getIdComercio() { return idComercio; }
@@ -46,4 +50,6 @@ public class ComercioLocalDTO {
     public void setLogo(String logo) { this.logo = logo; }
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
+    public String getHorarioApertura() { return horarioApertura; }
+    public void setHorarioApertura(String horarioApertura) { this.horarioApertura = horarioApertura; }
 }

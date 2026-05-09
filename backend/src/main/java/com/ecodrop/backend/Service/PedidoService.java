@@ -4,6 +4,8 @@ import com.ecodrop.backend.DTO.LineaPedidoDTO;
 import com.ecodrop.backend.DTO.PedidoDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Exceptions.StockInsuficienteException;
+import com.ecodrop.backend.Model.Entities.Repartidor;
+import com.ecodrop.backend.Repository.RepartidorRepository;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
 import com.ecodrop.backend.Model.Entities.LineaPedido;
 import com.ecodrop.backend.Model.Entities.Pedido;
@@ -16,7 +18,6 @@ import com.ecodrop.backend.Repository.PedidoRepository;
 import com.ecodrop.backend.Repository.ProductoRepository;
 import com.ecodrop.backend.Repository.UsuarioRepository;
 import org.springframework.lang.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("null")
@@ -36,17 +36,20 @@ public class PedidoService {
     private final ComercioLocalRepository comercioRepository;
     private final ProductoRepository productoRepository;
     private final LineaPedidoRepository lineaPedidoRepository;
+    private final RepartidorRepository repartidorRepository;
 
     public PedidoService(PedidoRepository pedidoRepository,
                          UsuarioRepository usuarioRepository,
                          ComercioLocalRepository comercioRepository,
                          ProductoRepository productoRepository,
-                         LineaPedidoRepository lineaPedidoRepository) {
+                         LineaPedidoRepository lineaPedidoRepository,
+                         RepartidorRepository repartidorRepository) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.comercioRepository = comercioRepository;
         this.productoRepository = productoRepository;
         this.lineaPedidoRepository = lineaPedidoRepository;
+        this.repartidorRepository = repartidorRepository;
     }
 
     public List<PedidoDTO> listarTodos() {
@@ -74,11 +77,7 @@ public class PedidoService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('USUARIO')")
     public PedidoDTO crearPedido(@NonNull PedidoDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("El DTO del pedido no puede ser nulo");
-        }
         if (dto.getIdComercio() == null) {
             throw new IllegalArgumentException("El ID del comercio es obligatorio");
         }
@@ -86,26 +85,22 @@ public class PedidoService {
         // 1. Obtener usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Usuario usuario = Objects.requireNonNull(
-                usuarioRepository.findByEmail(email)
-                        .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"))
-        );
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
 
         // 2. Obtener comercio del pedido
-        ComercioLocal comercio = Objects.requireNonNull(
-                comercioRepository.findById(dto.getIdComercio())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"))
-        );
+        ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
+                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"));
 
         // 3. Crear pedido base
         Pedido pedido = new Pedido();
         pedido.setGastosEnvio(dto.getGastosEnvio() != null ? dto.getGastosEnvio() : 0.0);
         pedido.setCliente(usuario);
         pedido.setComercio(comercio);
+        pedido.setDireccionEntrega(usuario.getDireccionEntrega());
 
         // Guardar pedido para obtener ID
         Pedido guardado = pedidoRepository.save(pedido);
-        guardado.setDireccionEntrega(usuario.getDireccionEntrega());
 
         // 4. Procesar líneas de pedido
         double subtotal = 0.0;
@@ -119,10 +114,8 @@ public class PedidoService {
                 }
 
                 // Obtener producto
-                Producto producto = Objects.requireNonNull(
-                        productoRepository.findById(lineaDTO.getIdProducto())
-                                .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()))
-                );
+                Producto producto = productoRepository.findById(lineaDTO.getIdProducto())
+                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()));
 
                 // Validar que el producto pertenece al comercio del pedido
                 if (!producto.getComercio().getIdcomercio().equals(comercio.getIdcomercio())) {
@@ -162,6 +155,24 @@ public class PedidoService {
         guardado.setEstado(EstadoPedido.PENDIENTE);
 
         return mapToDTO(guardado);
+    }
+
+    public PedidoDTO cambiarEstado(@NonNull Long idPedido, @NonNull EstadoPedido nuevoEstado) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+        pedido.setEstado(nuevoEstado);
+        Pedido actualizado = pedidoRepository.save(pedido);
+        return mapToDTO(actualizado);
+    }
+
+    public PedidoDTO asignarRepartidor(@NonNull Long idPedido, @NonNull Long idRepartidor) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+        Repartidor repartidor = repartidorRepository.findById(idRepartidor)
+                .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado con ID: " + idRepartidor));
+        pedido.setRepartidor(repartidor);
+        Pedido actualizado = pedidoRepository.save(pedido);
+        return mapToDTO(actualizado);
     }
 
     private PedidoDTO mapToDTO(Pedido p) {

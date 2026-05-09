@@ -3,6 +3,8 @@ package com.ecodrop.backend.Controller;
 import com.ecodrop.backend.DTO.LoginDTO;
 import com.ecodrop.backend.DTO.UsuarioDTO;
 import com.ecodrop.backend.DTO.UsuarioRegistroDTO;
+import com.ecodrop.backend.Model.Entities.Usuario;
+import com.ecodrop.backend.Repository.UsuarioRepository;
 import com.ecodrop.backend.Security.JwtUtils;
 import com.ecodrop.backend.Service.UsuarioService;
 import jakarta.validation.Valid;
@@ -25,11 +27,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UsuarioService usuarioService;
     private final JwtUtils jwtUtils;
+    private final UsuarioRepository usuarioRepository;
 
-    public AuthController(AuthenticationManager authenticationManager, UsuarioService usuarioService, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UsuarioService usuarioService, JwtUtils jwtUtils, UsuarioRepository usuarioRepository) {
         this.authenticationManager = authenticationManager;
         this.usuarioService = usuarioService;
         this.jwtUtils = jwtUtils;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @PostMapping("/registrar")
@@ -46,9 +50,13 @@ public class AuthController {
 
         String jwt = jwtUtils.generateToken(authentication.getName());
 
+        Usuario usuario = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Map<String, String> response = new HashMap<>();
         response.put("token", jwt);
         response.put("email", authentication.getName());
+        response.put("rol", usuario.getRol().name().replace("ROLE_", ""));
         
         return ResponseEntity.ok(response);
     }
