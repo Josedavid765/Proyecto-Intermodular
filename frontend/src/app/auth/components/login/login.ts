@@ -13,6 +13,7 @@ export class LoginComponent {
     email: '',
     password: ''
   };
+  public error: string | null = null;
 
   constructor(
     private authService: Auth,
@@ -20,13 +21,14 @@ export class LoginComponent {
   ) {}
 
   onLogin() {
+    this.error = null;
     this.authService.login(this.credentials).subscribe({
       next: (res) => {
         this.router.navigate(['/comercios']); 
       },
       error: (err) => {
         console.error('Error en login:', err);
-        alert('Email o contraseña incorrectos');
+        this.error = err.error?.error || 'Email o contraseña incorrectos';
       }
     });
   }

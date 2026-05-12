@@ -25,19 +25,19 @@ public class UsuarioRegistroDTO {
     @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
 
-    @NotBlank(message = "La dirección de entrega es obligatoria")
     private String direccion;
 
-    public UsuarioRegistroDTO() {}
+    private String rol;
 
-    public UsuarioRegistroDTO(String nombre, String apellido, String email, String password, String telefono, String direccion) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.email = email;
-        this.password = password;
-        this.telefono = telefono;
-        this.direccion = direccion;
-    }
+    private String nombreComercio;
+    private String categoria;
+    private String direccionComercio;
+    private String horarioApertura;
+    private String logo;
+
+    private String vehiculo;
+
+    public UsuarioRegistroDTO() {}
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -51,4 +51,18 @@ public class UsuarioRegistroDTO {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public String getDireccion() { return direccion; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
+    public String getNombreComercio() { return nombreComercio; }
+    public void setNombreComercio(String nombreComercio) { this.nombreComercio = nombreComercio; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getDireccionComercio() { return direccionComercio; }
+    public void setDireccionComercio(String direccionComercio) { this.direccionComercio = direccionComercio; }
+    public String getHorarioApertura() { return horarioApertura; }
+    public void setHorarioApertura(String horarioApertura) { this.horarioApertura = horarioApertura; }
+    public String getLogo() { return logo; }
+    public void setLogo(String logo) { this.logo = logo; }
+    public String getVehiculo() { return vehiculo; }
+    public void setVehiculo(String vehiculo) { this.vehiculo = vehiculo; }
 }

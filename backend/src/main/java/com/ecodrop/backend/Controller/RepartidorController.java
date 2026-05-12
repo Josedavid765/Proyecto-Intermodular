@@ -2,12 +2,11 @@ package com.ecodrop.backend.Controller;
 
 import com.ecodrop.backend.DTO.RepartidorDTO;
 import com.ecodrop.backend.Service.RepartidorService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -38,6 +37,12 @@ public class RepartidorController {
     public ResponseEntity<RepartidorDTO> obtenerPerfil() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(repartidorService.obtenerPorEmail(email));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RepartidorDTO> crear(@Valid @RequestBody RepartidorDTO dto) {
+        return ResponseEntity.ok(repartidorService.crear(dto));
     }
 
     @PutMapping("/estado")

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Usuario } from '../../../models/usuario.model';
 import { Auth } from '../../../services/auth';
 import { Router } from '@angular/router';
 
@@ -10,7 +9,22 @@ import { Router } from '@angular/router';
   styleUrl: './registro.css'     
 })
 export class RegistroComponent {
-  public usuario: Usuario = {};
+  public registroData: any = {
+    nombre: '',
+    apellido: '',
+    email: '',
+    password: '',
+    telefono: '',
+    direccion: '',
+    rol: 'USUARIO',
+    nombreComercio: '',
+    categoria: '',
+    direccionComercio: '',
+    horarioApertura: '',
+    vehiculo: 'BICICLETA'
+  };
+  public error: string | null = null;
+  public successMessage: string | null = null;
 
   constructor(
     private authService: Auth,
@@ -18,17 +32,18 @@ export class RegistroComponent {
   ) {}
 
   onRegistro(): void {
-    console.log('Datos a enviar al backend:', this.usuario);
+    this.error = null;
+    this.successMessage = null;
     
-    this.authService.registrar(this.usuario).subscribe({
+    this.authService.registrar(this.registroData).subscribe({
       next: (response) => {
         console.log('Registro exitoso', response);
-        alert('Cuenta creada con éxito. Ahora puedes iniciar sesión.');
-        this.router.navigate(['/login']);
+        this.successMessage = 'Cuenta creada con éxito. Ahora puedes iniciar sesión.';
+        setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (error) => {
         console.error('Fallo al registrar:', error);
-        alert('Error en el registro. Abre la consola (F12) para más detalles.');
+        this.error = error.error?.error || 'Error en el registro. Inténtalo de nuevo.';
       }
     });
   }
