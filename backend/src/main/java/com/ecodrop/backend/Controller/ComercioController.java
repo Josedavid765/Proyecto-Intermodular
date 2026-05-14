@@ -42,4 +42,10 @@ public class ComercioController {
     public ResponseEntity<ComercioLocalDTO> crear(@Valid @RequestBody ComercioLocalDTO dto) {
         return ResponseEntity.ok(comercioService.guardar(dto));
     }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('COMERCIO')")
+    public ResponseEntity<ComercioLocalDTO> actualizarMiComercio(@Valid @RequestBody ComercioLocalDTO dto) {
+        return ResponseEntity.ok(comercioService.guardar(dto));
+    }
 }

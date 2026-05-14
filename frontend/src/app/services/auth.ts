@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { Usuario } from '../models/usuario.model';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
@@ -16,8 +15,12 @@ export class Auth {
     private router: Router
   ) {}
 
-  registrar(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(`${this.apiUrl}/registrar`, usuario);
+  registrarComercio(datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/registrar/comercio`, datos);
+  }
+
+  registrarRepartidor(datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/registrar/repartidor`, datos);
   }
 
   login(credenciales: any): Observable<any> {
@@ -25,6 +28,12 @@ export class Auth {
       tap(res => {
         if (res.token) {
           localStorage.setItem('eco_token', res.token);
+        }
+        if (res.rol) {
+          localStorage.setItem('eco_rol', res.rol);
+        }
+        if (res.email) {
+          localStorage.setItem('eco_email', res.email);
         }
       })
     );
@@ -38,8 +47,18 @@ export class Auth {
     return localStorage.getItem('eco_token');
   }
 
+  getRol(): string | null {
+    return localStorage.getItem('eco_rol');
+  }
+
+  getEmail(): string | null {
+    return localStorage.getItem('eco_email');
+  }
+
   logout() {
     localStorage.removeItem('eco_token');
+    localStorage.removeItem('eco_rol');
+    localStorage.removeItem('eco_email');
     this.router.navigate(['/login']);
   }
 }

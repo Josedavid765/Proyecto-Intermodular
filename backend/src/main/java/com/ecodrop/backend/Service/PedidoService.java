@@ -1,22 +1,15 @@
 package com.ecodrop.backend.Service;
 
-import com.ecodrop.backend.DTO.LineaPedidoDTO;
 import com.ecodrop.backend.DTO.PedidoDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
-import com.ecodrop.backend.Exceptions.StockInsuficienteException;
 import com.ecodrop.backend.Model.Entities.Repartidor;
 import com.ecodrop.backend.Repository.RepartidorRepository;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
-import com.ecodrop.backend.Model.Entities.LineaPedido;
 import com.ecodrop.backend.Model.Entities.Pedido;
-import com.ecodrop.backend.Model.Entities.Producto;
-import com.ecodrop.backend.Model.Entities.Usuario;
 import com.ecodrop.backend.Model.Enum.EstadoPedido;
+import com.ecodrop.backend.Model.Enum.EstadoRepartidor;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
-import com.ecodrop.backend.Repository.LineaPedidoRepository;
 import com.ecodrop.backend.Repository.PedidoRepository;
-import com.ecodrop.backend.Repository.ProductoRepository;
-import com.ecodrop.backend.Repository.UsuarioRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,29 +20,25 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("null")
 @Service
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
-    private final UsuarioRepository usuarioRepository;
     private final ComercioLocalRepository comercioRepository;
-    private final ProductoRepository productoRepository;
-    private final LineaPedidoRepository lineaPedidoRepository;
     private final RepartidorRepository repartidorRepository;
+    private final GeocodingService geocodingService;
+    private final RoutingService routingService;
 
     public PedidoService(PedidoRepository pedidoRepository,
-                         UsuarioRepository usuarioRepository,
                          ComercioLocalRepository comercioRepository,
-                         ProductoRepository productoRepository,
-                         LineaPedidoRepository lineaPedidoRepository,
-                         RepartidorRepository repartidorRepository) {
+                         RepartidorRepository repartidorRepository,
+                         GeocodingService geocodingService,
+                         RoutingService routingService) {
         this.pedidoRepository = pedidoRepository;
-        this.usuarioRepository = usuarioRepository;
         this.comercioRepository = comercioRepository;
-        this.productoRepository = productoRepository;
-        this.lineaPedidoRepository = lineaPedidoRepository;
         this.repartidorRepository = repartidorRepository;
+        this.geocodingService = geocodingService;
+        this.routingService = routingService;
     }
 
     public List<PedidoDTO> listarTodos() {
@@ -64,8 +53,8 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
-    public List<PedidoDTO> listarPorUsuario(@NonNull Long idUsuario) {
-        return pedidoRepository.findByClienteIdUsuario(idUsuario).stream()
+    public List<PedidoDTO> listarPorRepartidor(Long idRepartidor, EstadoPedido estado) {
+        return pedidoRepository.findByRepartidorIdRepartidorAndEstado(idRepartidor, estado).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -76,132 +65,193 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public PedidoDTO crearPedido(@NonNull PedidoDTO dto) {
-        if (dto.getIdComercio() == null) {
-            throw new IllegalArgumentException("El ID del comercio es obligatorio");
-        }
+    public List<PedidoDTO> listarPorComercio(@NonNull Long idComercio, EstadoPedido estado) {
+        return pedidoRepository.findByComercioIdcomercioAndEstado(idComercio, estado).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
-        // 1. Obtener usuario autenticado
+    public List<PedidoDTO> listarPedidosPorComercioActual() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado"));
-
-        // 2. Obtener comercio del pedido
-        ComercioLocal comercio = comercioRepository.findById(dto.getIdComercio())
+        ComercioLocal comercio = comercioRepository.findByEmail(email)
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado"));
+        return pedidoRepository.findByComercioIdcomercio(comercio.getIdcomercio()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
-        // 3. Crear pedido base
+    @Transactional
+    public PedidoDTO crearPedido(@NonNull PedidoDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        ComercioLocal comercio = comercioRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado para este usuario"));
+
         Pedido pedido = new Pedido();
-        pedido.setGastosEnvio(dto.getGastosEnvio() != null ? dto.getGastosEnvio() : 0.0);
-        pedido.setCliente(usuario);
+        pedido.setNombre(dto.getNombre());
+        pedido.setPeso(dto.getPeso());
+        pedido.setDireccionRecogida(comercio.getDireccionComercio());
+        pedido.setDireccionEntrega(dto.getDireccionEntrega());
         pedido.setComercio(comercio);
-        pedido.setDireccionEntrega(usuario.getDireccionEntrega());
+        pedido.setFechaPedido(LocalDate.now());
+        pedido.setEstado(EstadoPedido.PENDIENTE);
 
-        // Guardar pedido para obtener ID
-        Pedido guardado = pedidoRepository.save(pedido);
+        pedido = pedidoRepository.save(pedido);
 
-        // 4. Procesar líneas de pedido
-        double subtotal = 0.0;
-        if (dto.getLineas() != null && !dto.getLineas().isEmpty()) {
-            for (LineaPedidoDTO lineaDTO : dto.getLineas()) {
-                if (lineaDTO.getIdProducto() == null) {
-                    throw new IllegalArgumentException("El ID del producto es obligatorio en la línea de pedido");
-                }
-                if (lineaDTO.getCantidad() <= 0) {
-                    throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
-                }
+        try {
+            Double[] coordsRecogida = geocodingService.geocodificar(pedido.getDireccionRecogida());
+            Double[] coordsEntrega = geocodingService.geocodificar(pedido.getDireccionEntrega());
 
-                // Obtener producto
-                Producto producto = productoRepository.findById(lineaDTO.getIdProducto())
-                        .orElseThrow(() -> new RecursoNoEncontrado("Producto no encontrado: " + lineaDTO.getIdProducto()));
+            if (coordsRecogida != null && coordsEntrega != null) {
+                pedido.setLatitudRecogida(coordsRecogida[0]);
+                pedido.setLongitudRecogida(coordsRecogida[1]);
+                pedido.setLatitudEntrega(coordsEntrega[0]);
+                pedido.setLongitudEntrega(coordsEntrega[1]);
 
-                // Validar que el producto pertenece al comercio del pedido
-                if (!producto.getComercio().getIdcomercio().equals(comercio.getIdcomercio())) {
-                    throw new RecursoNoEncontrado("El producto " + producto.getNombre() + " no pertenece al comercio del pedido");
-                }
+                Double distancia = routingService.calcularDistancia(
+                        coordsRecogida[0], coordsRecogida[1],
+                        coordsEntrega[0], coordsEntrega[1]);
+                pedido.setDistancia(distancia);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al geocodificar: " + e.getMessage());
+        }
 
-                // Validar stock
-                int cantidadSolicitada = lineaDTO.getCantidad();
-                if (producto.getStock() < cantidadSolicitada) {
-                    throw new StockInsuficienteException(
-                            "Stock insuficiente para " + producto.getNombre() +
-                            ". Disponible: " + producto.getStock() + ", Solicitado: " + cantidadSolicitada
-                    );
-                }
+        pedido = pedidoRepository.save(pedido);
+        return mapToDTO(pedido);
+    }
 
-                // Decrementar stock
-                producto.setStock(producto.getStock() - cantidadSolicitada);
-                productoRepository.save(producto);
+    public List<PedidoDTO> listarSinRepartidor() {
+        return pedidoRepository.findByEstadoAndRepartidorIsNull(EstadoPedido.PENDIENTE).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
-                // Crear línea (precio de venta se copia del producto, no del DTO)
-                LineaPedido linea = new LineaPedido();
-                linea.setCantidad(cantidadSolicitada);
-                linea.setPrecioVenta(producto.getPrecioUnitario());
-                linea.setPedido(guardado);
-                linea.setProducto(producto);
+    @Transactional
+    public PedidoDTO asignarRepartidor(@NonNull Long idPedido, @NonNull Long idRepartidor) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
 
-                lineaPedidoRepository.save(linea);
-                subtotal += linea.getCantidad() * linea.getPrecioVenta();
+        if (pedido.getRepartidor() != null) {
+            throw new IllegalStateException("El pedido ya tiene un repartidor asignado");
+        }
+
+        Repartidor repartidor = repartidorRepository.findById(idRepartidor)
+                .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado con ID: " + idRepartidor));
+
+        pedido.setRepartidor(repartidor);
+        pedido.setEstado(EstadoPedido.EN_TRANSITO);
+        pedido = pedidoRepository.save(pedido);
+
+        repartidor.setEstado(EstadoRepartidor.OCUPADO);
+        repartidorRepository.save(repartidor);
+
+        if (pedido.getDistancia() == null && pedido.getLatitudRecogida() != null && pedido.getLatitudEntrega() != null) {
+            try {
+                Double distancia = routingService.calcularDistancia(
+                        pedido.getLatitudRecogida(), pedido.getLongitudRecogida(),
+                        pedido.getLatitudEntrega(), pedido.getLongitudEntrega());
+                pedido.setDistancia(distancia);
+                pedido = pedidoRepository.save(pedido);
+            } catch (Exception e) {
+                System.err.println("Error al calcular distancia: " + e.getMessage());
             }
         }
 
-        // 5. Cálculo de total (suma de productos + gastosEnvio, sin fee extra)
-        guardado.setTotal(subtotal + guardado.getGastosEnvio());
-
-        // 6. Automatización de fecha y estado
-        guardado.setFechaPedido(LocalDate.now());
-        guardado.setEstado(EstadoPedido.PENDIENTE);
-
-        return mapToDTO(guardado);
+        return mapToDTO(pedido);
     }
 
+    @Transactional
     public PedidoDTO cambiarEstado(@NonNull Long idPedido, @NonNull EstadoPedido nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
         pedido.setEstado(nuevoEstado);
-        Pedido actualizado = pedidoRepository.save(pedido);
-        return mapToDTO(actualizado);
+        pedido = pedidoRepository.save(pedido);
+
+        if (nuevoEstado == EstadoPedido.ENTREGADO && pedido.getRepartidor() != null) {
+            Repartidor repartidor = pedido.getRepartidor();
+            repartidor.setEstado(EstadoRepartidor.DISPONIBLE);
+            repartidorRepository.save(repartidor);
+        }
+
+        return mapToDTO(pedido);
     }
 
-    public PedidoDTO asignarRepartidor(@NonNull Long idPedido, @NonNull Long idRepartidor) {
+    @Transactional
+    public PedidoDTO valorar(@NonNull Long idPedido, @NonNull String tipo, @NonNull Integer puntuacion) {
+        if (puntuacion < 1 || puntuacion > 5) {
+            throw new IllegalArgumentException("La puntuación debe ser entre 1 y 5");
+        }
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
-        Repartidor repartidor = repartidorRepository.findById(idRepartidor)
-                .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado con ID: " + idRepartidor));
-        pedido.setRepartidor(repartidor);
-        Pedido actualizado = pedidoRepository.save(pedido);
-        return mapToDTO(actualizado);
+
+        if ("COMERCIO".equalsIgnoreCase(tipo)) {
+            pedido.setValoracionComercio(puntuacion);
+        } else if ("REPARTIDOR".equalsIgnoreCase(tipo)) {
+            pedido.setValoracionRepartidor(puntuacion);
+        } else {
+            throw new IllegalArgumentException("Tipo de valoración inválido. Use COMERCIO o REPARTIDOR");
+        }
+
+        pedido = pedidoRepository.save(pedido);
+        return mapToDTO(pedido);
+    }
+
+    @Transactional
+    public PedidoDTO obtenerPorId(@NonNull Long idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+        return mapToDTO(pedido);
+    }
+
+    @Transactional
+    public PedidoDTO actualizarPedido(@NonNull Long idPedido, @NonNull PedidoDTO dto) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+
+        if (dto.getNombre() != null) pedido.setNombre(dto.getNombre());
+        if (dto.getPeso() != null) pedido.setPeso(dto.getPeso());
+        if (dto.getDireccionRecogida() != null) pedido.setDireccionRecogida(dto.getDireccionRecogida());
+        if (dto.getDireccionEntrega() != null) pedido.setDireccionEntrega(dto.getDireccionEntrega());
+
+        pedido = pedidoRepository.save(pedido);
+        return mapToDTO(pedido);
+    }
+
+    @Transactional
+    public void eliminarPedido(@NonNull Long idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+        pedidoRepository.delete(pedido);
     }
 
     private PedidoDTO mapToDTO(Pedido p) {
         PedidoDTO dto = new PedidoDTO();
         dto.setIdPedido(p.getIdPedido());
         dto.setFechaPedido(p.getFechaPedido());
-        dto.setGastosEnvio(p.getGastosEnvio());
-        dto.setTotal(p.getTotal());
+        dto.setNombre(p.getNombre());
+        dto.setPeso(p.getPeso());
+        dto.setDireccionRecogida(p.getDireccionRecogida());
+        dto.setDireccionEntrega(p.getDireccionEntrega());
+        dto.setLatitudRecogida(p.getLatitudRecogida());
+        dto.setLongitudRecogida(p.getLongitudRecogida());
+        dto.setLatitudEntrega(p.getLatitudEntrega());
+        dto.setLongitudEntrega(p.getLongitudEntrega());
+        dto.setDistancia(p.getDistancia());
         dto.setEstado(p.getEstado());
-        dto.setIdUsuario(p.getCliente().getIdUsuario());
         dto.setIdComercio(p.getComercio().getIdcomercio());
-        
-        if (p.getLineas() != null) {
-            List<LineaPedidoDTO> lineasDTO = p.getLineas().stream()
-                    .map(this::mapLineaToDTO)
-                    .collect(Collectors.toList());
-            dto.setLineas(lineasDTO);
-        }
-        
-        return dto;
-    }
+        dto.setNombreComercio(p.getComercio().getNombreComercio());
 
-    private LineaPedidoDTO mapLineaToDTO(LineaPedido lp) {
-        LineaPedidoDTO dto = new LineaPedidoDTO();
-        dto.setIdLineaPedido(lp.getIdLineaPedido());
-        dto.setCantidad(lp.getCantidad());
-        dto.setPrecioVenta(lp.getPrecioVenta());
-        dto.setIdPedido(lp.getPedido().getIdPedido());
-        dto.setIdProducto(lp.getProducto().getIdProducto());
+        if (p.getRepartidor() != null) {
+            dto.setIdRepartidor(p.getRepartidor().getIdRepartidor());
+            dto.setNombreRepartidor(p.getRepartidor().getNombre() + " " + p.getRepartidor().getApellidos());
+        }
+
+        dto.setValoracionComercio(p.getValoracionComercio());
+        dto.setValoracionRepartidor(p.getValoracionRepartidor());
+
         return dto;
     }
 }

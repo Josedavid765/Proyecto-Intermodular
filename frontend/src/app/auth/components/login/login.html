@@ -1,5 +1,5 @@
 <div class="login-container">
-    <h2>Acceso Clientes</h2>
+    <h2>Iniciar Sesión</h2>
     <div *ngIf="error" class="state-message state-error">
         <p class="error-text">{{ error }}</p>
     </div>
@@ -12,7 +12,7 @@
                     <rect x="2" y="4" width="20" height="16" rx="2"/>
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
-                <input type="email" id="email" name="email" [(ngModel)]="credentials.email" #email="ngModel" required email placeholder="usuario@ecodrop.com">
+                <input type="email" id="email" name="email" [(ngModel)]="credentials.email" #email="ngModel" required email placeholder="email@ejemplo.com">
             </div>
             <div *ngIf="email.invalid && (email.dirty || email.touched)" class="field-error">
                 <span *ngIf="email.errors?.['required']">El email es obligatorio</span>

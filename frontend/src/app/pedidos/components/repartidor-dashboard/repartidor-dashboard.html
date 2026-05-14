@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Panel de Repartidor</h1>
+    <p *ngIf="repartidor">Bienvenido, {{ repartidor.nombre }} {{ repartidor.apellidos }}</p>
+  </div>
+
+  <div *ngIf="error" class="mensaje error" (click)="limpiarMensajes()">{{ error }}</div>
+  <div *ngIf="mensajeExito" class="mensaje exito" (click)="limpiarMensajes()">{{ mensajeExito }}</div>
+
+  <div class="tabs">
+    <button [class.active]="tabActivo === 'disponibles'" (click)="tabActivo = 'disponibles'; limpiarMensajes()">
+      Pedidos Abiertos ({{ disponibles.length }})
+    </button>
+    <button [class.active]="tabActivo === 'mios'" (click)="tabActivo = 'mios'; limpiarMensajes()">
+      Mis Repartos ({{ misPedidosActivos.length }})
+    </button>
+    <button [class.active]="tabActivo === 'entregados'" (click)="tabActivo = 'entregados'; limpiarMensajes()">
+      Entregados ({{ misPedidosEntregados.length }})
+    </button>
+  </div>
+
+  <div *ngIf="tabActivo === 'disponibles'">
+    <div class="table-wrapper">
+      <table class="orders-table" *ngIf="disponibles.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Comercio</th>
+            <th>Recogida</th>
+            <th>Entrega</th>
+            <th>Peso</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of disponibles">
+            <td>#ECO-{{ p.idPedido }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.nombreComercio }}</td>
+            <td>{{ p.direccionRecogida }}</td>
+            <td>{{ p.direccionEntrega }}</td>
+            <td>{{ p.peso }} kg</td>
+            <td><button class="btn-aceptar" (click)="aceptarReparto(p.idPedido!)">Aceptar</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="disponibles.length === 0" class="mensaje">No hay pedidos abiertos disponibles.</div>
+    </div>
+  </div>
+
+  <div *ngIf="tabActivo === 'mios'">
+    <div class="table-wrapper">
+      <table class="orders-table" *ngIf="misPedidosActivos.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Comercio</th>
+            <th>Entrega</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of misPedidosActivos">
+            <td>#ECO-{{ p.idPedido }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.nombreComercio }}</td>
+            <td>{{ p.direccionEntrega }}</td>
+            <td><span class="estado-badge" [class]="getEstadoClass(p.estado)">{{ getEstadoTexto(p.estado) }}</span></td>
+            <td>
+              <button *ngIf="p.estado === 'EN_TRANSITO'" class="btn-entregar" (click)="marcarEntregado(p.idPedido!)">Marcar Entregado</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="misPedidosActivos.length === 0" class="mensaje">No tienes repartos activos.</div>
+    </div>
+  </div>
+
+  <div *ngIf="tabActivo === 'entregados'">
+    <div class="table-wrapper">
+      <table class="orders-table" *ngIf="misPedidosEntregados.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Comercio</th>
+            <th>Entrega</th>
+            <th>Valoración</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of misPedidosEntregados">
+            <td>#ECO-{{ p.idPedido }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.nombreComercio }}</td>
+            <td>{{ p.direccionEntrega }}</td>
+            <td>
+              <button *ngIf="!p.valoracionComercio" class="btn-valorar" (click)="iniciarValoracion(p.idPedido!)">Valorar</button>
+              <span *ngIf="p.valoracionComercio" class="valorado">Valorado ({{ p.valoracionComercio }}/5)</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="misPedidosEntregados.length === 0" class="mensaje">No hay entregados todavía.</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="pedidoValorando" (click)="cancelarValoracion()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Valorar Comercio</h3>
+      <p>Puntúa al comercio del 1 al 5:</p>
+      <div class="estrellas">
+        <button *ngFor="let s of [1,2,3,4,5]" class="estrella" [class.active]="s <= puntuacionValoracion" (click)="puntuacionValoracion = s">
+          {{ s <= puntuacionValoracion ? '&#9733;' : '&#9734;' }}
+        </button>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primario" (click)="valorarComercio(pedidoValorando!)">Enviar</button>
+        <button class="btn-secundario" (click)="cancelarValoracion()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

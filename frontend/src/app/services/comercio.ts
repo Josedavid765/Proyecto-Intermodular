@@ -19,4 +19,12 @@ export class ComercioService {
   getComercioPorId(id: number): Observable<Comercio> {
     return this.http.get<Comercio>(`${this.apiUrl}/${id}`);
   }
+
+  getMiComercio(): Observable<Comercio> {
+    return this.http.get<Comercio>(`${this.apiUrl}/me`);
+  }
+
+  actualizarComercio(datos: any): Observable<Comercio> {
+    return this.http.put<Comercio>(`${this.apiUrl}/me`, datos);
+  }
 }

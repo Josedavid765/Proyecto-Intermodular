@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
 import { Auth } from '../../../services/auth';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -24,7 +27,12 @@ export class LoginComponent {
     this.error = null;
     this.authService.login(this.credentials).subscribe({
       next: (res) => {
-        this.router.navigate(['/comercios']); 
+        const rol = res.rol;
+        if (rol === 'COMERCIO') {
+          this.router.navigate(['/comercio/dashboard']);
+        } else if (rol === 'REPARTIDOR') {
+          this.router.navigate(['/repartidor/dashboard']);
+        }
       },
       error: (err) => {
         console.error('Error en login:', err);

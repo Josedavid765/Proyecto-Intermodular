@@ -9,13 +9,6 @@
     </div>
 
     <div class="role-selector">
-        <button type="button" class="role-btn" [class.active]="registroData.rol === 'USUARIO'" (click)="registroData.rol = 'USUARIO'">
-            <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span>Cliente</span>
-        </button>
         <button type="button" class="role-btn" [class.active]="registroData.rol === 'COMERCIO'" (click)="registroData.rol = 'COMERCIO'">
             <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/>
@@ -75,7 +68,7 @@
                     <rect x="2" y="4" width="20" height="16" rx="2"/>
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
-                <input type="email" id="email" name="email" [(ngModel)]="registroData.email" #email="ngModel" required email placeholder="usuario@ecodrop.com">
+                <input type="email" id="email" name="email" [(ngModel)]="registroData.email" #email="ngModel" required email placeholder="email@ejemplo.com">
             </div>
             <div *ngIf="email.invalid && (email.dirty || email.touched)" class="field-error">
                 <span *ngIf="email.errors?.['required']">El email es obligatorio</span>
@@ -111,20 +104,6 @@
                     <span *ngIf="telefono.errors?.['required']">El teléfono es obligatorio</span>
                     <span *ngIf="telefono.errors?.['pattern']">Debe tener exactamente 9 dígitos</span>
                 </div>
-            </div>
-        </div>
-
-        <div *ngIf="registroData.rol === 'USUARIO'" class="form-group">
-            <label for="direccion">Dirección de Entrega</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                <input type="text" id="direccion" name="direccion" [(ngModel)]="registroData.direccion" #dir="ngModel" [required]="registroData.rol === 'USUARIO'" placeholder="Calle, número, ciudad, código postal">
-            </div>
-            <div *ngIf="dir.invalid && (dir.dirty || dir.touched)" class="field-error">
-                La dirección es obligatoria
             </div>
         </div>
 

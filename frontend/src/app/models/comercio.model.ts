@@ -6,4 +6,5 @@ export interface Comercio {
   telefono?: string;
   horarioApertura?: string;
   logo?: string;
+  email?: string;
 }

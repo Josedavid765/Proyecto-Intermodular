@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
 import { Auth } from '../../../services/auth';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './registro.html', 
   styleUrl: './registro.css'     
 })
@@ -15,8 +18,7 @@ export class RegistroComponent {
     email: '',
     password: '',
     telefono: '',
-    direccion: '',
-    rol: 'USUARIO',
+    rol: 'COMERCIO',
     nombreComercio: '',
     categoria: '',
     direccionComercio: '',
@@ -34,10 +36,34 @@ export class RegistroComponent {
   onRegistro(): void {
     this.error = null;
     this.successMessage = null;
-    
-    this.authService.registrar(this.registroData).subscribe({
-      next: (response) => {
-        console.log('Registro exitoso', response);
+
+    const esComercio = this.registroData.rol === 'COMERCIO';
+
+    const datos = esComercio
+      ? {
+          nombreComercio: this.registroData.nombreComercio,
+          categoria: this.registroData.categoria,
+          direccionComercio: this.registroData.direccionComercio,
+          horarioApertura: this.registroData.horarioApertura,
+          telefono: this.registroData.telefono,
+          email: this.registroData.email,
+          password: this.registroData.password
+        }
+      : {
+          nombre: this.registroData.nombre,
+          apellidos: this.registroData.apellido,
+          telefono: this.registroData.telefono,
+          vehiculo: this.registroData.vehiculo,
+          email: this.registroData.email,
+          password: this.registroData.password
+        };
+
+    const request$ = esComercio
+      ? this.authService.registrarComercio(datos)
+      : this.authService.registrarRepartidor(datos);
+
+    request$.subscribe({
+      next: () => {
         this.successMessage = 'Cuenta creada con éxito. Ahora puedes iniciar sesión.';
         setTimeout(() => this.router.navigate(['/login']), 2000);
       },

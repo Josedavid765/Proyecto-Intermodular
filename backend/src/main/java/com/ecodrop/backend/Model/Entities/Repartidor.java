@@ -1,8 +1,11 @@
 package com.ecodrop.backend.Model.Entities;
 
 import com.ecodrop.backend.Model.Enum.EstadoRepartidor;
+import com.ecodrop.backend.Model.Enum.Rol;
 import com.ecodrop.backend.Model.Enum.Vehiculo;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,12 +13,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.persistence.CascadeType;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
@@ -45,25 +48,22 @@ public class Repartidor {
     @NotNull
     private EstadoRepartidor estado;
 
+    @Email
+    @NotBlank(message = "El email es obligatorio")
+    @Column(unique = true)
+    private String email;
+
+    @NotBlank(message = "La contrasena es obligatoria")
+    @Size(min = 8, message = "La contrasena debe tener al menos 8 caracteres")
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
+
     @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
 
-    @OneToOne
-    private Usuario usuario;
-
     public Repartidor() {}
-
-    public Repartidor(Long idRepartidor, String nombre, String apellidos, String telefono, Vehiculo vehiculo, Boolean disponibilidad, EstadoRepartidor estado, List<Pedido> pedidos, Usuario usuario) {
-        this.idRepartidor = idRepartidor;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.telefono = telefono;
-        this.vehiculo = vehiculo;
-        this.disponibilidad = disponibilidad;
-        this.estado = estado;
-        this.pedidos = pedidos;
-        this.usuario = usuario;
-    }
 
     public Long getIdRepartidor() { return idRepartidor; }
     public void setIdRepartidor(Long idRepartidor) { this.idRepartidor = idRepartidor; }
@@ -79,8 +79,12 @@ public class Repartidor {
     public void setDisponibilidad(Boolean disponibilidad) { this.disponibilidad = disponibilidad; }
     public EstadoRepartidor getEstado() { return estado; }
     public void setEstado(EstadoRepartidor estado) { this.estado = estado; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public Rol getRol() { return rol; }
+    public void setRol(Rol rol) { this.rol = rol; }
     public List<Pedido> getPedidos() { return pedidos; }
     public void setPedidos(List<Pedido> pedidos) { this.pedidos = pedidos; }
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 }

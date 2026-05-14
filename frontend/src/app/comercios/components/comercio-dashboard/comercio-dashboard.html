@@ -1,0 +1,79 @@
+<div *ngIf="error" class="mensaje error" (click)="limpiarMensajes()">{{ error }}</div>
+<div *ngIf="mensajeExito" class="mensaje exito" (click)="limpiarMensajes()">{{ mensajeExito }}</div>
+
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>{{ comercio?.nombreComercio ?? 'Cargando...' }} - Mis Pedidos</h1>
+    <button class="btn-publicar" (click)="mostrarFormulario = !mostrarFormulario; limpiarMensajes()">
+      {{ mostrarFormulario ? 'Cancelar' : '+ Publicar Pedido' }}
+    </button>
+  </div>
+
+  <div class="form-card" *ngIf="mostrarFormulario">
+    <h3>Nuevo Pedido</h3>
+    <p class="direccion-recogida" *ngIf="comercio?.direccionComercio">
+      Recogida: <strong>{{ comercio?.direccionComercio }}</strong>
+    </p>
+    <div class="form-grid">
+      <label>
+        Nombre del Pedido
+        <input type="text" [(ngModel)]="nuevoPedido.nombre" placeholder="Nombre del pedido" required>
+      </label>
+      <label>
+        Peso (kg)
+        <input type="number" step="0.1" min="0" [(ngModel)]="nuevoPedido.peso" placeholder="0.0" required>
+      </label>
+      <label class="full-width">
+        Dirección de Entrega
+        <input type="text" [(ngModel)]="nuevoPedido.direccionEntrega" placeholder="Calle, número, ciudad" required>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primario" (click)="mostrarConfirmarPedido()" [disabled]="creando">
+        {{ creando ? 'Creando...' : 'Publicar Pedido' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrarConfirmacion" (click)="cancelarCreacion()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Confirmar Pedido</h3>
+      <div class="confirmacion-datos">
+        <p><strong>Nombre:</strong> {{ nuevoPedido.nombre }}</p>
+        <p><strong>Recogida:</strong> {{ comercio?.direccionComercio }}</p>
+        <p><strong>Peso:</strong> {{ nuevoPedido.peso }} kg</p>
+        <p><strong>Entrega:</strong> {{ nuevoPedido.direccionEntrega }}</p>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primario" (click)="confirmarCreacion()">Confirmar</button>
+        <button class="btn-secundario" (click)="cancelarCreacion()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="orders-table" *ngIf="pedidos.length > 0">
+      <thead>
+        <tr>
+          <th>ID Pedido</th>
+          <th>Fecha</th>
+          <th>Destino</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pedidos">
+          <td>#ECO-{{ p.idPedido }}</td>
+          <td>{{ p.fechaPedido | date:'dd/MM/yyyy' }}</td>
+          <td>{{ p.direccionEntrega }}</td>
+          <td><span class="estado-badge" [class]="getEstadoClass(p.estado)">{{ getEstadoTexto(p.estado) }}</span></td>
+          <td><a [routerLink]="['/pedido', p.idPedido]" class="btn-accion">Ver Detalles</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="pedidos.length === 0" class="mensaje">No hay pedidos todavía.</div>
+  </div>
+</div>
+
+

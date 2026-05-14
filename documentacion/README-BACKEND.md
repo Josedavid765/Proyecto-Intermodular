@@ -8,10 +8,9 @@
 - **CORS:** http://localhost:4200
 
 ## Seguridad
-- Endpoints públicos: `POST /api/auth/**`, `GET /api/productos/**`, `GET /api/comercios/**`
+- Endpoints públicos: `POST /api/auth/**`, `GET /api/comercios/**`, `GET /api/repartidores/**`
 - El resto requiere header: `Authorization: Bearer <token>`
-- Roles: `USUARIO`, `COMERCIO`, `REPARTIDOR`, `ADMIN`
-- El registro siempre crea rol `USUARIO`
+- Roles: `COMERCIO`, `REPARTIDOR`
 - Login devuelve: `{token, email, rol}`
 
 ## Endpoints
@@ -19,24 +18,9 @@
 ### Auth (`/api/auth`)
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| POST | /registrar | No | Registrar usuario |
+| POST | /registrar/comercio | No | Registrar comercio |
+| POST | /registrar/repartidor | No | Registrar repartidor |
 | POST | /login | No | Login, devuelve JWT |
-
-### Usuarios (`/api/usuarios`)
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /me | Sí | Perfil del usuario autenticado |
-
-### Productos (`/api/productos`)
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | / | No | Listar todos |
-| GET | /disponibles | No | Solo disponibles |
-| GET | /{id} | No | Por ID |
-| GET | /comercio/{id} | No | Por comercio |
-| POST | / | COMERCIO/ADMIN | Crear producto |
-| PUT | /{id} | COMERCIO/ADMIN | Actualizar |
-| DELETE | /{id} | COMERCIO/ADMIN | Eliminar |
 
 ### Comercios (`/api/comercios`)
 | Método | Ruta | Auth | Descripción |
@@ -49,20 +33,14 @@
 ### Pedidos (`/api/pedidos`)
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | /todos | ADMIN | Todos los pedidos |
-| GET | /usuario/{id} | USUARIO/ADMIN | Por usuario |
 | GET | /comercio/{id} | COMERCIO/ADMIN | Por comercio |
+| GET | /comercio/me | COMERCIO | Mis pedidos |
+| GET | /disponibles | REPARTIDOR | Pedidos sin repartidor |
 | GET | /repartidor/{id} | REPARTIDOR/ADMIN | Por repartidor |
-| POST | / | USUARIO | Crear pedido |
-| PATCH | /{id}/estado | ADMIN/REPARTIDOR | Cambiar estado |
-| PUT | /{id}/repartidor/{idRep} | ADMIN | Asignar repartidor |
-
-### Líneas Pedido (`/api/lineas-pedido`)
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | /pedido/{id} | Sí | Líneas de un pedido |
-| POST | / | Sí | Crear línea |
-| DELETE | /{id} | Sí | Eliminar línea |
+| POST | / | COMERCIO | Crear pedido |
+| PATCH | /{id}/estado | COMERCIO/REPARTIDOR | Cambiar estado |
+| PUT | /{id}/repartidor/{idRep} | REPARTIDOR | Asignar repartidor |
+| PUT | /{id}/valorar | COMERCIO/REPARTIDOR | Valorar (tipo, puntuacion) |
 
 ### Repartidores (`/api/repartidores`)
 | Método | Ruta | Auth | Descripción |
@@ -75,6 +53,4 @@
 ## Enums
 - **EstadoPedido:** `PENDIENTE, EN_TRANSITO, ENTREGADO`
 - **EstadoRepartidor:** `DISPONIBLE, OCUPADO`
-- **CategoriaProducto:** `ENTRADA, PRINCIPAL, POSTRE, BEBIDA, MENU, OTRO`
-- **UnidadMedida:** `UNIDAD, KILOGRAMO, GRAMO, LITRO, MILILITRO, PIEZA`
 - **Vehiculo:** `BICICLETA, PATINETE`

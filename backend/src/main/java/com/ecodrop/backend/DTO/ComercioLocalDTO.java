@@ -11,32 +11,24 @@ public class ComercioLocalDTO {
     @Size(max = 100)
     private String nombreComercio;
 
-    @NotBlank(message = "La categoría es obligatoria")
+    @NotBlank(message = "La categoria es obligatoria")
     private String categoria;
 
-    @NotBlank(message = "La dirección es obligatoria")
+    @NotBlank(message = "La direccion es obligatoria")
     private String direccionComercio;
 
     private String logo;
 
-    @NotBlank(message = "El teléfono es obligatorio")
-    @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener 9 dígitos")
+    @NotBlank(message = "El telefono es obligatorio")
+    @Pattern(regexp = "^[0-9]{9}$", message = "El telefono debe tener 9 digitos")
     private String telefono;
 
     @NotBlank(message = "El horario de apertura es obligatorio")
     private String horarioApertura;
 
-    public ComercioLocalDTO() {}
+    private String email;
 
-    public ComercioLocalDTO(Long idComercio, String nombreComercio, String categoria, String direccionComercio, String logo, String telefono, String horarioApertura) {
-        this.idComercio = idComercio;
-        this.nombreComercio = nombreComercio;
-        this.categoria = categoria;
-        this.direccionComercio = direccionComercio;
-        this.logo = logo;
-        this.telefono = telefono;
-        this.horarioApertura = horarioApertura;
-    }
+    public ComercioLocalDTO() {}
 
     public Long getIdComercio() { return idComercio; }
     public void setIdComercio(Long idComercio) { this.idComercio = idComercio; }
@@ -52,4 +44,6 @@ public class ComercioLocalDTO {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public String getHorarioApertura() { return horarioApertura; }
     public void setHorarioApertura(String horarioApertura) { this.horarioApertura = horarioApertura; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

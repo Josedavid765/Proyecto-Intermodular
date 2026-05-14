@@ -1,14 +1,20 @@
-import { LineaPedido } from './linea-pedido.model';
-
 export interface Pedido {
   idPedido?: number;
   fechaPedido?: string;
-  gastosEnvio?: number;
-  total?: number;
-  estado?: string;
+  nombre?: string;
+  peso?: number;
+  direccionRecogida?: string;
   direccionEntrega?: string;
-  nombreComercio?: string;
-  idUsuario?: number;
+  latitudRecogida?: number;
+  longitudRecogida?: number;
+  latitudEntrega?: number;
+  longitudEntrega?: number;
+  distancia?: number;
+  estado?: string;
   idComercio?: number;
-  lineas?: LineaPedido[];
+  nombreComercio?: string;
+  idRepartidor?: number;
+  nombreRepartidor?: string;
+  valoracionComercio?: number;
+  valoracionRepartidor?: number;
 }

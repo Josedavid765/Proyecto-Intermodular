@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Pedido } from '../models/pedido.model';
 import { environment } from '../../environments/environment';
 
@@ -13,30 +13,45 @@ export class PedidoService {
 
   constructor(private http: HttpClient) {}
 
-  getPedidos(): Observable<Pedido[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
-      map(response => this.unwrapResponse(response))
-    );
+  getPedidosComercio(): Observable<Pedido[]> {
+    return this.http.get<Pedido[]>(`${this.apiUrl}/comercio/me`);
   }
 
-  crearPedido(datosPedido: any): Observable<Pedido> {
-    return this.http.post<any>(this.apiUrl, datosPedido).pipe(
-      map(response => this.unwrapResponse(response))
-    );
+  getPedidosDisponibles(): Observable<Pedido[]> {
+    return this.http.get<Pedido[]>(`${this.apiUrl}/disponibles`);
   }
 
-  private unwrapResponse(response: any): any {
-    if (Array.isArray(response)) {
-      return response;
-    }
-    if (response && response.data) {
-      if (Array.isArray(response.data)) {
-        return response.data;
-      }
-      if (response.data.content && Array.isArray(response.data.content)) {
-        return response.data.content;
-      }
-    }
-    return response;
+  getPedidosRepartidor(idRepartidor: number, estado?: string): Observable<Pedido[]> {
+    let url = `${this.apiUrl}/repartidor/${idRepartidor}`;
+    if (estado) url += `?estado=${estado}`;
+    return this.http.get<Pedido[]>(url);
+  }
+
+  crearPedido(datos: any): Observable<Pedido> {
+    return this.http.post<Pedido>(this.apiUrl, datos);
+  }
+
+  asignarRepartidor(idPedido: number, idRepartidor: number): Observable<Pedido> {
+    return this.http.put<Pedido>(`${this.apiUrl}/${idPedido}/repartidor/${idRepartidor}`, {});
+  }
+
+  actualizarEstado(id: number, estado: string): Observable<Pedido> {
+    return this.http.patch<Pedido>(`${this.apiUrl}/${id}/estado`, { estado });
+  }
+
+  getPedido(id: number): Observable<Pedido> {
+    return this.http.get<Pedido>(`${this.apiUrl}/${id}`);
+  }
+
+  modificarPedido(id: number, datos: any): Observable<Pedido> {
+    return this.http.put<Pedido>(`${this.apiUrl}/${id}`, datos);
+  }
+
+  eliminarPedido(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  valorar(id: number, tipo: string, puntuacion: number): Observable<Pedido> {
+    return this.http.put<Pedido>(`${this.apiUrl}/${id}/valorar`, { tipo, puntuacion });
   }
 }

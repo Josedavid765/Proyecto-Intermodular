@@ -3,9 +3,7 @@ package com.ecodrop.backend.Service;
 import com.ecodrop.backend.DTO.ComercioLocalDTO;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
 import com.ecodrop.backend.Model.Entities.ComercioLocal;
-import com.ecodrop.backend.Model.Entities.Usuario;
 import com.ecodrop.backend.Repository.ComercioLocalRepository;
-import com.ecodrop.backend.Repository.UsuarioRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +15,9 @@ import java.util.stream.Collectors;
 public class ComercioLocalService {
     
     private final ComercioLocalRepository comercioRepository;
-    private final UsuarioRepository usuarioRepository;
 
-    public ComercioLocalService(ComercioLocalRepository comercioRepository, UsuarioRepository usuarioRepository) {
+    public ComercioLocalService(ComercioLocalRepository comercioRepository) {
         this.comercioRepository = comercioRepository;
-        this.usuarioRepository = usuarioRepository;
     }
 
     public List<ComercioLocalDTO> listarTodos() {
@@ -40,7 +36,7 @@ public class ComercioLocalService {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El email no puede ser nulo o vacío");
         }
-        ComercioLocal comercio = comercioRepository.findByUsuarioEmail(email)
+        ComercioLocal comercio = comercioRepository.findByEmail(email)
                 .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado para el email: " + email));
         return mapToDTO(comercio);
     }
@@ -50,10 +46,14 @@ public class ComercioLocalService {
             throw new IllegalArgumentException("El DTO no puede ser nulo");
         }
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RecursoNoEncontrado("Usuario no encontrado con email: " + email));
-        ComercioLocal comercio = mapToEntity(dto);
-        comercio.setUsuario(usuario);
+        ComercioLocal comercio = comercioRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Comercio no encontrado con email: " + email));
+        comercio.setNombreComercio(dto.getNombreComercio());
+        comercio.setCategoria(dto.getCategoria());
+        comercio.setDireccionComercio(dto.getDireccionComercio());
+        comercio.setLogo(dto.getLogo());
+        comercio.setTelefono(dto.getTelefono());
+        comercio.setHorarioApertura(dto.getHorarioApertura());
         ComercioLocal guardado = comercioRepository.save(comercio);
         return mapToDTO(guardado);
     }
@@ -67,16 +67,7 @@ public class ComercioLocalService {
         dto.setLogo(c.getLogo());
         dto.setTelefono(c.getTelefono());
         dto.setHorarioApertura(c.getHorarioApertura());
+        dto.setEmail(c.getEmail());
         return dto;
-    }
-
-    private ComercioLocal mapToEntity(ComercioLocalDTO dto) {
-        ComercioLocal c = new ComercioLocal();
-        c.setNombreComercio(dto.getNombreComercio());
-        c.setCategoria(dto.getCategoria());
-        c.setDireccionComercio(dto.getDireccionComercio());
-        c.setLogo(dto.getLogo());
-        c.setTelefono(dto.getTelefono());
-        return c;
     }
 }

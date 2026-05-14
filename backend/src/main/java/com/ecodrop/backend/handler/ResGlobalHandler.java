@@ -2,7 +2,6 @@ package com.ecodrop.backend.handler;
 
 import com.ecodrop.backend.Exceptions.EmailRegistradoException;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
-import com.ecodrop.backend.Exceptions.StockInsuficienteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,8 +24,8 @@ public class ResGlobalHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(StockInsuficienteException.class)
-    public ResponseEntity<Map<String, Object>> exceptionStockInsuficiente(StockInsuficienteException ex) {
+    @ExceptionHandler(EmailRegistradoException.class)
+    public ResponseEntity<Map<String, Object>> exceptionEmailRegistrado(EmailRegistradoException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
@@ -34,8 +33,8 @@ public class ResGlobalHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(EmailRegistradoException.class)
-    public ResponseEntity<Map<String, Object>> exceptionEmailRegistrado(EmailRegistradoException ex) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> exceptionIllegalArgument(IllegalArgumentException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());

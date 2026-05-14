@@ -1,17 +1,21 @@
 package com.ecodrop.backend.Model.Entities;
 
+import com.ecodrop.backend.Model.Enum.Rol;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.CascadeType;
 import java.util.List;
 
 @Entity
@@ -21,7 +25,7 @@ public class ComercioLocal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idcomercio;
 
-    @NotBlank(message = "El nombre del comercio es obligatorios")
+    @NotBlank(message = "El nombre del comercio es obligatorio")
     @Size(max = 100)
     private String nombreComercio;
 
@@ -40,30 +44,22 @@ public class ComercioLocal {
     @NotBlank(message = "El horario de apertura es obligatorio")
     private String horarioApertura;
 
-    @OneToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @Email
+    @NotBlank(message = "El email es obligatorio")
+    @Column(unique = true)
+    private String email;
+
+    @NotBlank(message = "La contrasena es obligatoria")
+    @Size(min = 8, message = "La contrasena debe tener al menos 8 caracteres")
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
 
     @OneToMany(mappedBy = "comercio", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
 
-    @OneToMany(mappedBy = "comercio", cascade = CascadeType.ALL)
-    private List<Producto> productos;
-
     public ComercioLocal() {}
-
-    public ComercioLocal(Long idcomercio, String nombreComercio, String categoria, String direccionComercio, String logo, String telefono, String horarioApertura, Usuario usuario, List<Pedido> pedidos, List<Producto> productos) {
-        this.idcomercio = idcomercio;
-        this.nombreComercio = nombreComercio;
-        this.categoria = categoria;
-        this.direccionComercio = direccionComercio;
-        this.logo = logo;
-        this.telefono = telefono;
-        this.horarioApertura = horarioApertura;
-        this.usuario = usuario;
-        this.pedidos = pedidos;
-        this.productos = productos;
-    }
 
     public Long getIdcomercio() { return idcomercio; }
     public void setIdcomercio(Long idcomercio) { this.idcomercio = idcomercio; }
@@ -79,10 +75,12 @@ public class ComercioLocal {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public String getHorarioApertura() { return horarioApertura; }
     public void setHorarioApertura(String horarioApertura) { this.horarioApertura = horarioApertura; }
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public Rol getRol() { return rol; }
+    public void setRol(Rol rol) { this.rol = rol; }
     public List<Pedido> getPedidos() { return pedidos; }
     public void setPedidos(List<Pedido> pedidos) { this.pedidos = pedidos; }
-    public List<Producto> getProductos() { return productos; }
-    public void setProductos(List<Producto> productos) { this.productos = productos; }
 }
