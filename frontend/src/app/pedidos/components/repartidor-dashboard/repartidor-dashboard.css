@@ -122,6 +122,46 @@
   background: var(--secondary);
 }
 
+.acciones-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-detalle {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-detalle:hover {
+  background: var(--secondary);
+}
+
+.btn-rechazar {
+  padding: 6px 14px;
+  background: #e74c3c;
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-rechazar:hover {
+  background: #c0392b;
+}
+
 .btn-entregar {
   padding: 6px 14px;
   background: #1976d2;
@@ -234,6 +274,23 @@
 
 .btn-secundario:hover {
   background: #64748b;
+}
+
+.btn-delete {
+  padding: 10px 20px;
+  background: #e74c3c;
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
 }
 
 .form-actions {

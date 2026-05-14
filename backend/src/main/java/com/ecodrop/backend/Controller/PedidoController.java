@@ -46,6 +46,12 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.listarSinRepartidor());
     }
 
+    @GetMapping("/repartidor/mis-pedidos")
+    @PreAuthorize("hasRole('REPARTIDOR')")
+    public ResponseEntity<List<PedidoDTO>> listarMisPedidosRepartidor() {
+        return ResponseEntity.ok(pedidoService.listarPedidosPorRepartidorActual());
+    }
+
     @GetMapping("/repartidor/{idRepartidor}")
     @PreAuthorize("hasRole('REPARTIDOR')")
     public ResponseEntity<List<PedidoDTO>> listarPorRepartidor(
@@ -55,6 +61,12 @@ public class PedidoController {
             return ResponseEntity.ok(pedidoService.listarPorRepartidor(idRepartidor, estado));
         }
         return ResponseEntity.ok(pedidoService.listarPorRepartidor(idRepartidor));
+    }
+
+    @DeleteMapping("/{id}/repartidor")
+    @PreAuthorize("hasRole('REPARTIDOR')")
+    public ResponseEntity<PedidoDTO> rechazarPedido(@PathVariable Long id) {
+        return ResponseEntity.ok(pedidoService.rechazarPedido(id));
     }
 
     @GetMapping("/{id}")

@@ -71,6 +71,16 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
+    public List<PedidoDTO> listarPedidosPorRepartidorActual() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Repartidor repartidor = repartidorRepository.findByEmail(email)
+                .orElseThrow(() -> new RecursoNoEncontrado("Repartidor no encontrado"));
+        return pedidoRepository.findByRepartidorIdRepartidor(repartidor.getIdRepartidor()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<PedidoDTO> listarPedidosPorComercioActual() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -175,6 +185,33 @@ public class PedidoService {
             repartidor.setEstado(EstadoRepartidor.DISPONIBLE);
             repartidorRepository.save(repartidor);
         }
+
+        return mapToDTO(pedido);
+    }
+
+    @Transactional
+    public PedidoDTO rechazarPedido(@NonNull Long idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RecursoNoEncontrado("Pedido no encontrado con ID: " + idPedido));
+
+        if (pedido.getRepartidor() == null) {
+            throw new IllegalStateException("El pedido no tiene repartidor asignado");
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        String repartidorEmail = pedido.getRepartidor().getEmail();
+        if (!repartidorEmail.equals(email)) {
+            throw new IllegalStateException("No puedes rechazar un pedido que no tienes asignado");
+        }
+
+        Repartidor repartidor = pedido.getRepartidor();
+        repartidor.setEstado(EstadoRepartidor.DISPONIBLE);
+        repartidorRepository.save(repartidor);
+
+        pedido.setRepartidor(null);
+        pedido.setEstado(EstadoPedido.PENDIENTE);
+        pedido = pedidoRepository.save(pedido);
 
         return mapToDTO(pedido);
     }

@@ -22,6 +22,7 @@ export class RepartidorDashboardComponent implements OnInit {
   mensajeExito: string | null = null;
 
   pedidoValorando: number | null = null;
+  mostrandoConfirmacionRechazar: number | null = null;
   puntuacionValoracion = 5;
 
   constructor(
@@ -104,6 +105,20 @@ export class RepartidorDashboardComponent implements OnInit {
         this.cargarPedidos();
       },
       error: (err) => { this.error = 'Error al valorar: ' + err.message; }
+    });
+  }
+
+  confirmarRechazar(): void {
+    const id = this.mostrandoConfirmacionRechazar;
+    if (!id) return;
+    this.mostrandoConfirmacionRechazar = null;
+    this.error = null;
+    this.pedidoService.rechazarPedido(id).subscribe({
+      next: () => {
+        this.mensajeExito = 'Pedido rechazado correctamente';
+        this.cargarPedidos();
+      },
+      error: (err) => { this.error = 'Error al rechazar: ' + err.message; }
     });
   }
 

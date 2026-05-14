@@ -51,6 +51,8 @@
     </div>
   </div>
 
+  <!-- DEBUG: pedidos.length = {{ pedidos.length }} -->
+  <pre style="display:none">{{ pedidos | json }}</pre>
   <div class="table-wrapper">
     <table class="orders-table" *ngIf="pedidos.length > 0">
       <thead>

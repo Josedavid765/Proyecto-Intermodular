@@ -41,7 +41,10 @@
             <td>{{ p.direccionRecogida }}</td>
             <td>{{ p.direccionEntrega }}</td>
             <td>{{ p.peso }} kg</td>
-            <td><button class="btn-aceptar" (click)="aceptarReparto(p.idPedido!)">Aceptar</button></td>
+            <td class="acciones-cell">
+              <button class="btn-aceptar" (click)="aceptarReparto(p.idPedido!)">Aceptar</button>
+              <a [routerLink]="['/pedido', p.idPedido]" class="btn-detalle">Ver Detalles</a>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -69,8 +72,10 @@
             <td>{{ p.nombreComercio }}</td>
             <td>{{ p.direccionEntrega }}</td>
             <td><span class="estado-badge" [class]="getEstadoClass(p.estado)">{{ getEstadoTexto(p.estado) }}</span></td>
-            <td>
+            <td class="acciones-cell">
+              <a [routerLink]="['/pedido', p.idPedido]" class="btn-detalle">Ver Detalles</a>
               <button *ngIf="p.estado === 'EN_TRANSITO'" class="btn-entregar" (click)="marcarEntregado(p.idPedido!)">Marcar Entregado</button>
+              <button class="btn-rechazar" (click)="mostrandoConfirmacionRechazar = p.idPedido!">Rechazar</button>
             </td>
           </tr>
         </tbody>
@@ -89,6 +94,7 @@
             <th>Comercio</th>
             <th>Entrega</th>
             <th>Valoración</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -101,10 +107,22 @@
               <button *ngIf="!p.valoracionComercio" class="btn-valorar" (click)="iniciarValoracion(p.idPedido!)">Valorar</button>
               <span *ngIf="p.valoracionComercio" class="valorado">Valorado ({{ p.valoracionComercio }}/5)</span>
             </td>
+            <td><a [routerLink]="['/pedido', p.idPedido]" class="btn-detalle">Ver Detalles</a></td>
           </tr>
         </tbody>
       </table>
       <div *ngIf="misPedidosEntregados.length === 0" class="mensaje">No hay entregados todavía.</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrandoConfirmacionRechazar" (click)="mostrandoConfirmacionRechazar = null">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>¿Rechazar pedido?</h3>
+      <p>El pedido volverá a estar disponible para otros repartidores.</p>
+      <div class="form-actions">
+        <button class="btn-delete" (click)="confirmarRechazar()">Rechazar Pedido</button>
+        <button class="btn-secundario" (click)="mostrandoConfirmacionRechazar = null">Cancelar</button>
+      </div>
     </div>
   </div>
 

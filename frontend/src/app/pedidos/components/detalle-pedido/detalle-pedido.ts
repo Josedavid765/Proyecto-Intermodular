@@ -38,12 +38,14 @@ export class DetallePedidoComponent implements OnInit {
   }
 
   cargarPedido(id: number): void {
+    console.log('📄 Cargando pedido ID:', id);
     this.pedidoService.getPedido(id).subscribe({
       next: (data) => {
+        console.log('📄 Pedido recibido:', data);
         this.pedido = data;
       },
       error: (err) => {
-        console.error('Error al cargar pedido:', err);
+        console.error('📄 Error al cargar pedido:', err);
         this.error = 'Error al cargar el pedido. Es posible que no exista o no tengas permisos.';
       }
     });

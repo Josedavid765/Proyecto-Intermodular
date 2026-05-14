@@ -54,4 +54,8 @@ export class PedidoService {
   valorar(id: number, tipo: string, puntuacion: number): Observable<Pedido> {
     return this.http.put<Pedido>(`${this.apiUrl}/${id}/valorar`, { tipo, puntuacion });
   }
+
+  rechazarPedido(id: number): Observable<Pedido> {
+    return this.http.delete<Pedido>(`${this.apiUrl}/${id}/repartidor`);
+  }
 }

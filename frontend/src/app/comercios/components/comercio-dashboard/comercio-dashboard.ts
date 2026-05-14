@@ -47,11 +47,14 @@ export class ComercioDashboardComponent implements OnInit {
   }
 
   cargarPedidos(): void {
+    console.log('📦 Cargando pedidos...');
     this.pedidoService.getPedidosComercio().subscribe({
       next: (data) => {
+        console.log('📦 Pedidos recibidos:', data);
         this.pedidos = data;
       },
       error: (err) => {
+        console.error('📦 Error al cargar pedidos:', err);
         this.error = 'Error al cargar pedidos: ' + err.message;
       }
     });
