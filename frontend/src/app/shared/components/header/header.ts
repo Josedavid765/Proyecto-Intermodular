@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Auth } from '../../../services/auth';
 
 @Component({
@@ -11,14 +11,14 @@ import { Auth } from '../../../services/auth';
   styleUrl: './header.css'
 })
 export class HeaderComponent {
-  constructor(public authService: Auth) {}
+  constructor(public authService: Auth, private router: Router) {}
 
   get rol(): string | null {
     return this.authService.getRol();
   }
 
   get isLanding(): boolean {
-    return window.location.pathname === '/' || window.location.pathname === '';
+    return this.router.url === '/';
   }
 
   logout() {

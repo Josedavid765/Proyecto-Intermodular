@@ -1,7 +1,8 @@
 <div *ngIf="error" class="mensaje error" (click)="error = null">{{ error }}</div>
 <div *ngIf="mensajeExito" class="mensaje exito" (click)="mensajeExito = null">{{ mensajeExito }}</div>
+<div *ngIf="cargando" class="mensaje">Cargando pedido...</div>
 
-<div class="detalle-container">
+<div *ngIf="!cargando" class="detalle-container">
   <div class="detalle-header">
     <button class="btn-volver" (click)="volver()">← Volver</button>
     <h1>Pedido #{{ pedido?.idPedido }}</h1>
@@ -51,8 +52,7 @@
       </div>
     </div>
 
-    <div class="detalle-actions" *ngIf="pedido?.estado !== 'ENTREGADO'">
-      <button class="btn-edit" (click)="iniciarEdicion()">Modificar Pedido</button>
+<div class="detalle-actions" *ngIf="pedido?.estado !== 'ENTREGADO' && esComercio">      <button class="btn-edit" (click)="iniciarEdicion()">Modificar Pedido</button>
       <button class="btn-delete" (click)="mostrandoConfirmacionEliminar = true">Eliminar Pedido</button>
     </div>
   </div>
@@ -97,4 +97,3 @@
   </div>
 </div>
 
-<div *ngIf="!pedido && !error" class="mensaje">Cargando pedido...</div>

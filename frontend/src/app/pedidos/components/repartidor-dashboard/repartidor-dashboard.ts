@@ -64,7 +64,9 @@ export class RepartidorDashboardComponent implements OnInit {
       next: (data) => {
         this.misPedidos = data;
       },
-      error: () => {}
+      error: (err) => {
+        this.error = 'Error al cargar pedidos: ' + err.message;
+      }
     });
   }
 

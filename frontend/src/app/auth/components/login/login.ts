@@ -32,6 +32,8 @@ export class LoginComponent {
           this.router.navigate(['/comercio/dashboard']);
         } else if (rol === 'REPARTIDOR') {
           this.router.navigate(['/repartidor/dashboard']);
+        } else {
+          this.error = 'Rol de usuario no reconocido';
         }
       },
       error: (err) => {

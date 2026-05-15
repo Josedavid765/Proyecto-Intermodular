@@ -17,6 +17,7 @@ export class DetallePedidoComponent implements OnInit {
   error: string | null = null;
   mensajeExito: string | null = null;
 
+  cargando = false
   editando = false;
   editData: any = {};
   guardando = false;
@@ -37,16 +38,22 @@ export class DetallePedidoComponent implements OnInit {
     }
   }
 
+  get esComercio(): boolean {
+    return localStorage.getItem('eco_rol') === 'COMERCIO';
+  }
+
   cargarPedido(id: number): void {
-    console.log('📄 Cargando pedido ID:', id);
+    this.cargando = true
     this.pedidoService.getPedido(id).subscribe({
       next: (data) => {
         console.log('📄 Pedido recibido:', data);
         this.pedido = data;
+        this.cargando = false
       },
       error: (err) => {
         console.error('📄 Error al cargar pedido:', err);
         this.error = 'Error al cargar el pedido. Es posible que no exista o no tengas permisos.';
+        this.cargando = false
       }
     });
   }

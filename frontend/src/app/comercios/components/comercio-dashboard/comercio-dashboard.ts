@@ -47,7 +47,6 @@ export class ComercioDashboardComponent implements OnInit {
   }
 
   cargarPedidos(): void {
-    console.log('📦 Cargando pedidos...');
     this.pedidoService.getPedidosComercio().subscribe({
       next: (data) => {
         console.log('📦 Pedidos recibidos:', data);
