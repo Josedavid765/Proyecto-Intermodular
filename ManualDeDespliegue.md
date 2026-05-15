@@ -31,8 +31,8 @@ docker compose version
 Ejecutar desde la raíz del proyecto (donde está `docker-compose.yml`):
 
 ```powershell
-# Construir las imágenes (solo necesario la primera vez o tras cambios)
-docker compose build --no-cache
+# Construir las imágenes 
+docker compose build 
 
 # Levantar todos los servicios en segundo plano
 docker compose up -d
@@ -45,6 +45,10 @@ docker compose down
 
 # Detener, eliminar contenedores y volúmenes (borra la base de datos)
 docker compose down -v
+
+## La ruta para poner en el Navegador una vez ya se han levantado los contenedores es esta: 
+
+- http://localhost:4200/
 ```
 
 ## Nota sobre puertos
