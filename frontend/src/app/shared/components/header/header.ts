@@ -21,7 +21,7 @@ export class HeaderComponent {
     return this.router.url === '/';
   }
 
-  logout() {
+  async logout() {
     this.authService.logout();
   }
 }

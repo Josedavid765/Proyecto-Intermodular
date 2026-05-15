@@ -2,7 +2,8 @@
 <div *ngIf="mensajeExito" class="mensaje exito" (click)="mensajeExito = null">{{ mensajeExito }}</div>
 <div *ngIf="cargando" class="mensaje">Cargando pedido...</div>
 
-<div *ngIf="!cargando" class="detalle-container">
+<div *ngIf="!cargando && pedido" class="detalle-container">
+  <div *ngIf="!cargando && !pedido && !error" class="mensaje">No se encontró el pedido.</div>
   <div class="detalle-header">
     <button class="btn-volver" (click)="volver()">← Volver</button>
     <h1>Pedido #{{ pedido?.idPedido }}</h1>

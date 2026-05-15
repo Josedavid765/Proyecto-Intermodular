@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
@@ -9,6 +9,8 @@ import { environment } from '../../environments/environment';
 })
 export class Auth {
   private apiUrl = `${environment.apiUrl}/auth`; 
+  isLoggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('eco_token'));
+  rol$ = new BehaviorSubject<string | null>(localStorage.getItem('eco_rol'));
 
   constructor(
     private http: HttpClient,
@@ -28,9 +30,11 @@ export class Auth {
       tap(res => {
         if (res.token) {
           localStorage.setItem('eco_token', res.token);
+          this.isLoggedIn$.next(true);
         }
         if (res.rol) {
           localStorage.setItem('eco_rol', res.rol);
+          this.rol$.next(res.rol);
         }
         if (res.email) {
           localStorage.setItem('eco_email', res.email);
@@ -56,7 +60,9 @@ export class Auth {
   }
 
   logout() {
+    this.isLoggedIn$.next(false);
     localStorage.removeItem('eco_token');
+    this.rol$.next(null);
     localStorage.removeItem('eco_rol');
     localStorage.removeItem('eco_email');
     this.router.navigate(['/login']);

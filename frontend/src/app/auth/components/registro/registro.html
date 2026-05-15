@@ -39,7 +39,7 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    <input type="text" id="nombre" name="nombre" [(ngModel)]="registroData.nombre" #nombre="ngModel" required placeholder="Tu nombre">
+                    <input type="text" id="nombre" name="nombre" [required]="registroData.rol === 'COMERCIO'" [(ngModel)]="registroData.nombre" #nombre="ngModel" required placeholder="Tu nombre">
                 </div>
                 <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="field-error">
                     El nombre es obligatorio
@@ -118,7 +118,7 @@
                             <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/>
                             <path d="M12 3v6"/>
                         </svg>
-                        <input type="text" id="nombreComercio" name="nombreComercio" [(ngModel)]="registroData.nombreComercio" #nombreComercio="ngModel" required placeholder="Nombre de tu tienda">
+                        <input type="text" id="nombreComercio" name="nombreComercio" [required]="registroData.rol === 'COMERCIO'" [(ngModel)]="registroData.nombreComercio" #nombreComercio="ngModel" required placeholder="Nombre de tu tienda">
                     </div>
                     <div *ngIf="nombreComercio.invalid && (nombreComercio.dirty || nombreComercio.touched)" class="field-error">
                         El nombre del comercio es obligatorio
@@ -133,7 +133,7 @@
                             <path d="m9 8 3-3 3 3"/>
                             <path d="M12 5v9"/>
                         </svg>
-                        <select id="categoria" name="categoria" [(ngModel)]="registroData.categoria" #categoria="ngModel" required>
+                        <select id="categoria" name="categoria" [required]="registroData.rol === 'COMERCIO'" [(ngModel)]="registroData.categoria" #categoria="ngModel" required>
                             <option value="" disabled>Selecciona una categoría</option>
                             <option value="RESTAURANTE">Restaurante</option>
                             <option value="SUPERMERCADO">Supermercado</option>
@@ -154,7 +154,7 @@
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                         <circle cx="12" cy="10" r="3"/>
                     </svg>
-                    <input type="text" id="direccionComercio" name="direccionComercio" [(ngModel)]="registroData.direccionComercio" #direccionComercio="ngModel" required placeholder="Calle, número, ciudad">
+                    <input type="text" id="direccionComercio" [required]="registroData.rol === 'COMERCIO'" name="direccionComercio" [(ngModel)]="registroData.direccionComercio" #direccionComercio="ngModel" required placeholder="Calle, número, ciudad">
                 </div>
                 <div *ngIf="direccionComercio.invalid && (direccionComercio.dirty || direccionComercio.touched)" class="field-error">
                     La dirección del comercio es obligatoria
@@ -168,7 +168,7 @@
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M12 6v6l4 2"/>
                     </svg>
-                    <input type="text" id="horarioApertura" name="horarioApertura" [(ngModel)]="registroData.horarioApertura" #horarioApertura="ngModel" required placeholder="Ej: Lun-Vie 9:00-20:00, Sáb 10:00-14:00">
+                    <input type="text" id="horarioApertura" name="horarioApertura" [required]="registroData.rol === 'COMERCIO'" [(ngModel)]="registroData.horarioApertura" #horarioApertura="ngModel" required placeholder="Ej: Lun-Vie 9:00-20:00, Sáb 10:00-14:00">
                 </div>
                 <div *ngIf="horarioApertura.invalid && (horarioApertura.dirty || horarioApertura.touched)" class="field-error">
                     El horario de apertura es obligatorio

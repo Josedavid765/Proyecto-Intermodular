@@ -55,19 +55,16 @@ export class RepartidorDashboardComponent implements OnInit {
   }
 
   cargarPedidos(): void {
-    const id = this.repartidor!.idRepartidor!;
+    if (!this.repartidor?.idRepartidor) {
+      this.error = 'No se pudo obtener el ID del repartidor';
+      return;
+    }
+    const id = this.repartidor.idRepartidor;
     this.pedidoService.getPedidosDisponibles().subscribe({
-      next: (data) => { this.disponibles = data; },
-      error: () => {}
-    });
-    this.pedidoService.getPedidosRepartidor(id).subscribe({
-      next: (data) => {
-        this.misPedidos = data;
+        next: (data) => { this.disponibles = data;
       },
-      error: (err) => {
-        this.error = 'Error al cargar pedidos: ' + err.message;
-      }
-    });
+      error: (err) => {this.error = 'Error al cargar pedidos' + err.message}
+    })
   }
 
   aceptarReparto(idPedido: number): void {
@@ -77,7 +74,6 @@ export class RepartidorDashboardComponent implements OnInit {
       next: () => {
         this.mensajeExito = 'Reparto asignado correctamente';
         this.cargarPedidos();
-        this.tabActivo = 'mios';
       },
       error: (err) => { this.error = 'Error al asignar reparto: ' + err.message; }
     });
