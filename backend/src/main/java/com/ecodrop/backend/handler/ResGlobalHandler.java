@@ -2,6 +2,7 @@ package com.ecodrop.backend.handler;
 
 import com.ecodrop.backend.Exceptions.EmailRegistradoException;
 import com.ecodrop.backend.Exceptions.RecursoNoEncontrado;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -58,5 +59,14 @@ public class ResGlobalHandler {
 
         response.put("error", errors.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("error", "Email o contraseña incorrectos");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

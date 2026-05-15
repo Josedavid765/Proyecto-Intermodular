@@ -21,6 +21,7 @@ public class RoutingService {
      * Calcula la distancia en kilómetros entre dos coordenadas usando OSRM (OpenStreetMap).
      * Retorna la distancia en km o null si no se puede calcular.
      */
+    @SuppressWarnings("null")
     public Double calcularDistancia(Double latOrigen, Double lonOrigen, Double latDestino, Double lonDestino) {
         try {
             String url = String.format(
