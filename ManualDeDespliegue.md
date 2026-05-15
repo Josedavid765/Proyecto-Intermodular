@@ -48,7 +48,7 @@ docker compose down -v
 
 ## La ruta para poner en el Navegador una vez ya se han levantado los contenedores es esta: 
 
-- http://localhost:4200/
+http://localhost:4200/
 ```
 
 ## Nota sobre puertos
