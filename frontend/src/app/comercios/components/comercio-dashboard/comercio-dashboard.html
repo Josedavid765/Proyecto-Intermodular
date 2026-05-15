@@ -51,7 +51,9 @@
     </div>
   </div>
 
-  <div class="table-wrapper">
+  <div *ngIf="cargando" class="mensaje">Cargando pedidos...</div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
     <table class="orders-table" *ngIf="pedidos.length > 0">
       <thead>
         <tr>
@@ -75,5 +77,6 @@
     <div *ngIf="pedidos.length === 0" class="mensaje">No hay pedidos todavía.</div>
   </div>
 </div>
+
 
 

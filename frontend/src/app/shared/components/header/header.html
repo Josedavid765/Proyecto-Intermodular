@@ -7,7 +7,7 @@
   </div>
   <nav>
     <ul>
-      <ng-container *ngIf="!authService.isLoggedIn()">
+      <ng-container *ngIf="!(isLoggedIn$ | async)">
         <li><a routerLink="/">Inicio</a></li>
         <li><a routerLink="/" fragment="about">Nosotros</a></li>
         <li><a routerLink="/" fragment="services">Servicios</a></li>
@@ -15,13 +15,13 @@
         <li><a routerLink="/login" class="btn">Acceder</a></li>
       </ng-container>
 
-      <ng-container *ngIf="authService.isLoggedIn() && rol === 'COMERCIO'">
+      <ng-container *ngIf="(isLoggedIn$ | async) && (rol$ | async) === 'COMERCIO'">
         <li><a routerLink="/">Inicio</a></li>
         <li><a routerLink="/comercio/dashboard">Mis Pedidos</a></li>
         <li><a (click)="logout()" class="btn logout-btn" style="cursor: pointer;">Cerrar Sesión</a></li>
       </ng-container>
 
-      <ng-container *ngIf="authService.isLoggedIn() && rol === 'REPARTIDOR'">
+      <ng-container *ngIf="(isLoggedIn$ | async) && (rol$ | async) === 'REPARTIDOR'">
         <li><a routerLink="/">Inicio</a></li>
         <li><a routerLink="/repartidor/dashboard">Mis Repartos</a></li>
         <li><a (click)="logout()" class="btn logout-btn" style="cursor: pointer;">Cerrar Sesión</a></li>

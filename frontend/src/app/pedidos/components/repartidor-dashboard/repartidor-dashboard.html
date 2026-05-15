@@ -6,6 +6,7 @@
 
   <div *ngIf="error" class="mensaje error" (click)="limpiarMensajes()">{{ error }}</div>
   <div *ngIf="mensajeExito" class="mensaje exito" (click)="limpiarMensajes()">{{ mensajeExito }}</div>
+  <div *ngIf="cargando" class="mensaje">Cargando datos...</div>
 
   <div class="tabs">
     <button [class.active]="tabActivo === 'disponibles'" (click)="tabActivo = 'disponibles'; limpiarMensajes()">

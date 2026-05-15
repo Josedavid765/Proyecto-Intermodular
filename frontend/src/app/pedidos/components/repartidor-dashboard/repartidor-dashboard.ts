@@ -24,6 +24,7 @@ export class RepartidorDashboardComponent implements OnInit {
   pedidoValorando: number | null = null;
   mostrandoConfirmacionRechazar: number | null = null;
   puntuacionValoracion = 5;
+  cargando = false;
 
   constructor(
     private repartidorService: RepartidorService,
@@ -55,17 +56,29 @@ export class RepartidorDashboardComponent implements OnInit {
   }
 
   cargarPedidos(): void {
-    if (!this.repartidor?.idRepartidor) {
-      this.error = 'No se pudo obtener el ID del repartidor';
-      return;
-    }
-    const id = this.repartidor.idRepartidor;
-    this.pedidoService.getPedidosDisponibles().subscribe({
-        next: (data) => { this.disponibles = data;
-      },
-      error: (err) => {this.error = 'Error al cargar pedidos' + err.message}
-    })
+  if (!this.repartidor?.idRepartidor) {
+    this.error = 'No se pudo obtener el ID del repartidor';
+    return;
   }
+  this.cargando = true;
+  const id = this.repartidor.idRepartidor;
+
+  this.pedidoService.getPedidosDisponibles().subscribe({
+    next: (data) => { this.disponibles = data; },
+    error: (err) => { this.error = 'Error al cargar pedidos disponibles: ' + err.message; }
+  });
+
+  this.pedidoService.getPedidosRepartidor(id).subscribe({
+    next: (data) => {
+      this.misPedidos = data;
+      this.cargando = false;
+    },
+    error: (err) => {
+      this.cargando = false;
+      this.error = 'Error al cargar mis pedidos: ' + err.message;
+    }
+  });
+}
 
   aceptarReparto(idPedido: number): void {
     this.error = null;
@@ -73,7 +86,15 @@ export class RepartidorDashboardComponent implements OnInit {
     this.pedidoService.asignarRepartidor(idPedido, idRepartidor).subscribe({
       next: () => {
         this.mensajeExito = 'Reparto asignado correctamente';
-        this.cargarPedidos();
+        this.pedidoService.getPedidosDisponibles().subscribe({
+          next: (data) => { this.disponibles = data; }
+        });
+        this.pedidoService.getPedidosRepartidor(idRepartidor).subscribe({
+          next: (data) => {
+            this.misPedidos = data;
+            this.tabActivo = 'mios';
+          }
+        });
       },
       error: (err) => { this.error = 'Error al asignar reparto: ' + err.message; }
     });

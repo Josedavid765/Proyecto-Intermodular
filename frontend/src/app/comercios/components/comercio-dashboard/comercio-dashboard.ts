@@ -19,11 +19,12 @@ export class ComercioDashboardComponent implements OnInit {
   pedidos: Pedido[] = [];
   error: string | null = null;
   mensajeExito: string | null = null;
-
+  
   mostrarFormulario = false;
   nuevoPedido = { nombre: '', direccionEntrega: '', peso: null as number | null };
   creando = false;
   mostrarConfirmacion = false;
+  cargando = false;
 
   constructor(
     private comercioService: ComercioService,
@@ -35,29 +36,31 @@ export class ComercioDashboardComponent implements OnInit {
   }
 
   private cargarComercio(): void {
-    this.comercioService.getMiComercio().subscribe({
-      next: (c) => {
-        this.comercio = c;
-        this.cargarPedidos();
-      },
-      error: (err) => {
-        this.error = 'Error al cargar comercio: ' + err.message;
-      }
-    });
-  }
+  this.cargando = true;
+  this.comercioService.getMiComercio().subscribe({
+    next: (c) => {
+      this.comercio = c;
+      this.cargarPedidos();
+    },
+    error: (err) => {
+      this.cargando = false;
+      this.error = 'Error al cargar comercio: ' + err.message;
+    }
+  });
+}
 
   cargarPedidos(): void {
-    this.pedidoService.getPedidosComercio().subscribe({
-      next: (data) => {
-        console.log('📦 Pedidos recibidos:', data);
-        this.pedidos = data;
-      },
-      error: (err) => {
-        console.error('📦 Error al cargar pedidos:', err);
-        this.error = 'Error al cargar pedidos: ' + err.message;
-      }
-    });
-  }
+  this.pedidoService.getPedidosComercio().subscribe({
+    next: (data) => {
+      this.pedidos = data;
+      this.cargando = false;
+    },
+    error: (err) => {
+      this.cargando = false;
+      this.error = 'Error al cargar pedidos: ' + err.message;
+    }
+  });
+}
 
   mostrarConfirmarPedido(): void {
     if (!this.nuevoPedido.nombre || !this.nuevoPedido.direccionEntrega || !this.nuevoPedido.peso) return;

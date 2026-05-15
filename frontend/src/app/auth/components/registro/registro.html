@@ -39,10 +39,10 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    <input type="text" id="nombre" name="nombre" [required]="registroData.rol === 'COMERCIO'" [(ngModel)]="registroData.nombre" #nombre="ngModel" required placeholder="Tu nombre">
+                    <input type="text" id="nombre" name="nombre" [required]="registroData.rol === 'REPARTIDOR'" [(ngModel)]="registroData.nombre" #nombre="ngModel" placeholder="Tu nombre">
                 </div>
                 <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="field-error">
-                    El nombre es obligatorio
+                    <span *ngIf="nombre.errors?.['required']">El nombre es obligatorio</span>
                 </div>
             </div>
 
@@ -53,10 +53,10 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    <input type="text" id="apellido" name="apellido" [(ngModel)]="registroData.apellido" #apellido="ngModel" required placeholder="Tus apellidos">
+                    <input type="text" id="apellido" name="apellido" [required]="registroData.rol === 'REPARTIDOR'" [(ngModel)]="registroData.apellido" #apellido="ngModel" placeholder="Tus apellidos">
                 </div>
                 <div *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)" class="field-error">
-                    Los apellidos son obligatorios
+                    <span *ngIf="apellido.errors?.['required']">Los apellidos son obligatorios</span>
                 </div>
             </div>
         </div>

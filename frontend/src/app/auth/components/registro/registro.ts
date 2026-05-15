@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -11,7 +11,8 @@ import { Auth } from '../../../services/auth';
   templateUrl: './registro.html', 
   styleUrl: './registro.css'     
 })
-export class RegistroComponent {
+export class RegistroComponent implements OnDestroy {
+  private redirectTimeout: ReturnType<typeof setTimeout> | null = null;
   public registroData: any = {
     nombre: '',
     apellido: '',
@@ -65,12 +66,18 @@ export class RegistroComponent {
     request$.subscribe({
       next: () => {
         this.successMessage = 'Cuenta creada con éxito. Ahora puedes iniciar sesión.';
-        setTimeout(() => this.router.navigate(['/login']), 2000);
+        this.redirectTimeout = setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (error) => {
         console.error('Fallo al registrar:', error);
         this.error = error.error?.error || 'Error en el registro. Inténtalo de nuevo.';
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.redirectTimeout) {
+      clearTimeout(this.redirectTimeout);
+    }
   }
 }

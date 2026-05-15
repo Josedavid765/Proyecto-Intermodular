@@ -1,27 +1,22 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { CommonModule, AsyncPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, AsyncPipe, RouterModule],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
 export class HeaderComponent {
-  constructor(public authService: Auth, private router: Router) {}
+  private authService = inject(Auth);
 
-  get rol(): string | null {
-    return this.authService.getRol();
-  }
+  isLoggedIn$ = this.authService.isLoggedIn$;
+  rol$ = this.authService.rol$;
 
-  get isLanding(): boolean {
-    return this.router.url === '/';
-  }
-
-  async logout() {
+  logout() {
     this.authService.logout();
   }
 }

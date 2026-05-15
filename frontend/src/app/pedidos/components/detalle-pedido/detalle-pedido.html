@@ -1,6 +1,103 @@
 <div *ngIf="error" class="mensaje error" (click)="error = null">{{ error }}</div>
 <div *ngIf="mensajeExito" class="mensaje exito" (click)="mensajeExito = null">{{ mensajeExito }}</div>
 <div *ngIf="cargando" class="mensaje">Cargando pedido...</div>
+<div *ngIf="!cargando && !pedido && !error" class="mensaje">No se encontró el pedido.</div>
+
+<div *ngIf="!cargando && pedido" class="detalle-container">
+  <div class="detalle-header">
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <h1>Pedido #{{ pedido?.idPedido }}</h1>
+  </div>
+
+  <div class="detalle-card" *ngIf="!editando">
+    <div class="detalle-grid">
+      <div class="detalle-item">
+        <span class="detalle-label">Nombre</span>
+        <span class="detalle-value">{{ pedido?.nombre }}</span>
+      </div>
+      <div class="detalle-item">
+        <span class="detalle-label">Fecha</span>
+        <span class="detalle-value">{{ pedido?.fechaPedido | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="detalle-item">
+        <span class="detalle-label">Estado</span>
+        <span class="detalle-value">
+          <span class="badge-estado" [class.pendiente]="pedido?.estado === 'PENDIENTE'" [class.transito]="pedido?.estado === 'EN_TRANSITO'" [class.entregado]="pedido?.estado === 'ENTREGADO'">
+            {{ pedido?.estado === 'EN_TRANSITO' ? 'EN REPARTO' : pedido?.estado }}
+          </span>
+        </span>
+      </div>
+      <div class="detalle-item">
+        <span class="detalle-label">Peso</span>
+        <span class="detalle-value">{{ pedido?.peso }} kg</span>
+      </div>
+      <div class="detalle-item">
+        <span class="detalle-label">Dirección de Recogida</span>
+        <span class="detalle-value">{{ pedido?.direccionRecogida }}</span>
+      </div>
+      <div class="detalle-item">
+        <span class="detalle-label">Dirección de Entrega</span>
+        <span class="detalle-value">{{ pedido?.direccionEntrega }}</span>
+      </div>
+      <div class="detalle-item" *ngIf="pedido?.nombreComercio">
+        <span class="detalle-label">Comercio</span>
+        <span class="detalle-value">{{ pedido?.nombreComercio }}</span>
+      </div>
+      <div class="detalle-item" *ngIf="pedido?.nombreRepartidor">
+        <span class="detalle-label">Repartidor</span>
+        <span class="detalle-value">{{ pedido?.nombreRepartidor }}</span>
+      </div>
+      <div class="detalle-item" *ngIf="pedido?.distancia">
+        <span class="detalle-label">Distancia</span>
+        <span class="detalle-value">{{ pedido?.distancia }} km</span>
+      </div>
+    </div>
+
+    <div class="detalle-actions" *ngIf="pedido?.estado !== 'ENTREGADO'">
+      <button class="btn-edit" (click)="iniciarEdicion()">Modificar Pedido</button>
+      <button class="btn-delete" (click)="mostrandoConfirmacionEliminar = true">Eliminar Pedido</button>
+    </div>
+  </div>
+
+  <div class="detalle-card edit-card" *ngIf="editando">
+    <h3>Modificar Pedido</h3>
+    <div class="form-grid">
+      <label>
+        Nombre del Pedido
+        <input type="text" [(ngModel)]="editData.nombre" required>
+      </label>
+      <label>
+        Peso (kg)
+        <input type="number" step="0.1" min="0" [(ngModel)]="editData.peso" required>
+      </label>
+      <label class="full-width">
+        Dirección de Recogida
+        <input type="text" [(ngModel)]="editData.direccionRecogida" required>
+      </label>
+      <label class="full-width">
+        Dirección de Entrega
+        <input type="text" [(ngModel)]="editData.direccionEntrega" required>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primario" (click)="guardarCambios()" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+      </button>
+      <button class="btn-secundario" (click)="cancelarEdicion()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrandoConfirmacionEliminar" (click)="mostrandoConfirmacionEliminar = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>¿Eliminar pedido?</h3>
+      <p>Esta acción no se puede deshacer.</p>
+      <div class="form-actions">
+        <button class="btn-delete" (click)="eliminarPedido()">Eliminar</button>
+        <button class="btn-secundario" (click)="mostrandoConfirmacionEliminar = false">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div *ngIf="!cargando && pedido" class="detalle-container">
   <div *ngIf="!cargando && !pedido && !error" class="mensaje">No se encontró el pedido.</div>
